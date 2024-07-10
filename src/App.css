@@ -1,0 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*Color Palette Link: https://coolors.co/palette/cdb4db-ffc8dd-ffafcc-bde0fe-a2d2ff */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #222831;
+  color: #f5f5f5;
+  text-align: center;
+  overflow: hidden;
+  font-family: "Roboto Mono";
+}
+
+.main-container {
+  height: 100vh;
+}
+
+.controls-container {
+  position: relative;
+  vertical-align: middle;
+  display: flex;
+  height: max-content;
+  padding: 5px;
+  background-color: #31363f;
+  width: 100%;
+}
+
+.controls-list {
+  color: #222831;
+  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
+.controls-item {
+  font-weight: 400;
+  float: left;
+  width: 90px;
+}
+
+.controls-btn-direction {
+  border-radius: 5px;
+  border: 2px solid black;
+  background-color: #bde0fe;
+  width: 85px;
+}
+
+.controls-btn-main {
+  border-radius: 5px;
+  padding: 5px;
+  width: 85px;
+  border: 2px solid black;
+  background-color: #ffafcc;
+  margin: 5px 0px;
+}
+
+.controls-btn-option {
+  border-radius: 5px;
+  padding: 5px;
+  width: 85px;
+  height: 50px;
+  border: 2px solid black;
+  background-color: #a2d2ff;
+}
+
+.controls-btn-utils {
+  font-size: 14px;
+  width: 80px;
+  border-radius: 5px;
+  border: 2px solid black;
+  padding: 5px;
+  background-color: #cdb4db;
+  margin: 5px 0px;
+}
+
+.controls-btn-direction:hover,
+.controls-btn-option:hover,
+.controls-btn-main:hover,
+.controls-btn-utils:hover {
+  opacity: 0.7;
+}
+
+.turtle-name {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.turtle-select {
+  width: 200px;
+  background-color: #ffc8dd;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-size: 20px;
+  font-family: "Rubik";
+}
+
+.inventory-container {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  grid: 80px 80px 80px 80px / 80px 80px 80px 80px;
+  width: 400px;
+}
+
+.inventory-slot {
+  align-items: center;
+  overflow: hidden;
+  font-size: 12px;
+  border: 1px solid black;
+  background-color: #31363f;
+  width: 75px;
+  height: 75px;
+  margin: 3px;
+  text-align: center;
+}
+
+.inventory-item-count {
+  width: 100%;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.inventory-item {
+  width: 0px;
+  height: 0px;
+  position: absolute;
+  font-size: 20px;
+  border-radius: 5px;
+  background-color: #ffc8dd;
+  color: black;
+  visibility: hidden;
+}
+
+.inventory-slot:hover .inventory-item {
+  width: max-content;
+  height: max-content;
+  visibility: visible;
+  padding: 5px;
+}
+
+.inventory-item:empty {
+  padding: 0px !important;
+}

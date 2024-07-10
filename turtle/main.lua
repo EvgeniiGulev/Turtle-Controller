@@ -1,4 +1,4 @@
-local ws, err = http.websocket("ws://localhost:43509")
+local ws, err = http.websocket("ws://31.153.2.243:43509")
  
 if not ws then
     print("Failed to connect to WebSocket server:", err)
@@ -26,7 +26,31 @@ local function handleMessage(message)
         turtle.refuel()
     elseif message == "dig" then
         turtle.dig()
- 
+    elseif message == "digUp" then
+        turtle.digUp()
+    elseif message == "digDown" then
+        turtle.digDown()
+     elseif message == "inspect" then
+        local has_block, data = turtle.inspect()
+        if has_block then
+            ws.send(textutils.serialise(data))
+        else
+            ws.send("No Block Infront!")
+        end
+    elseif message == "inspectDown" then
+        local has_block, data = turtle.inspectDown()
+        if has_block then
+            ws.send(textutils.serialise(data))
+        else
+            ws.send("No Block Infront!")
+        end
+    elseif message == "inspectUp" then
+        local has_block, data = turtle.inspectUp()
+        if has_block then
+            ws.send(textutils.serialise(data))
+        else
+            ws.send("No Block Infront!")
+        end
     end
 end
  
