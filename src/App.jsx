@@ -2,14 +2,13 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Edges } from "@react-three/drei";
 import "./App.css";
-import Heading from "./components/heading";
 import Inventory from "./components/inventory";
 import Controls from "./components/controls";
+import * as THREE from "three";
 
 function App() {
-  const blockRef = useRef();
-  const turtleRef = useRef();
   const [isHovered, setIsHovered] = useState(false);
+  const [rotationAngle, setRotationAngle] = useState(0);
   const [isX, setIsX] = useState(0);
   const [isY, setIsY] = useState(0);
   const [isZ, setIsZ] = useState(0);
@@ -73,11 +72,13 @@ function App() {
   const handleLeft = useCallback(() => {
     sendCommand("left");
     setIsFacing((prevFacing) => (prevFacing - 1 + 4) % 4);
+    setRotationAngle((prevAngle) => prevAngle + Math.PI / 2);
   }, [sendCommand]);
 
   const handleRight = useCallback(() => {
     sendCommand("right");
     setIsFacing((prevFacing) => (prevFacing + 1) % 4);
+    setRotationAngle((prevAngle) => prevAngle - Math.PI / 2);
   }, [sendCommand]);
 
   const handleUp = useCallback(() => {
@@ -94,7 +95,13 @@ function App() {
     setIsHovered(!isHovered);
   };
 
+  const handleGetBlockData = () => {
+    ws.receive();
+  };
+
   const Block = ({ ...props }) => {
+    const blockRef = useRef();
+    const color = isHovered ? "teal" : "red";
     return (
       <mesh
         {...props}
@@ -104,7 +111,7 @@ function App() {
         className="block-mesh"
       >
         <boxGeometry />
-        <meshStandardMaterial color={"red"} />
+        <meshStandardMaterial color={color} />
         <Edges linewidth={3} threshold={15} color={"black"} />
       </mesh>
     );
@@ -112,23 +119,6 @@ function App() {
 
   const Turtle = ({ position, ...props }) => {
     const turtleRef = useRef();
-    const [targetPosition, setTargetPosition] = useState(position);
-
-    useEffect(() => {
-      setTargetPosition(position);
-    }, [position]);
-
-    useFrame(() => {
-      if (turtleRef.current) {
-        const moveSpeed = 0.05;
-        turtleRef.current.position.x +=
-          (targetPosition[0] - turtleRef.current.position.x) * moveSpeed;
-        turtleRef.current.position.y +=
-          (targetPosition[1] - turtleRef.current.position.y) * moveSpeed;
-        turtleRef.current.position.z +=
-          (targetPosition[2] - turtleRef.current.position.z) * moveSpeed;
-      }
-    });
 
     useEffect(() => {
       const handleKeyDown = (event) => {
@@ -170,12 +160,24 @@ function App() {
       handleDown,
     ]);
 
-    const color = isHovered ? "yellow" : "white";
+    useFrame(() => {
+      if (turtleRef.current) {
+        turtleRef.current.rotation.y = rotationAngle;
+      }
+    });
 
     return (
-      <mesh ref={turtleRef} position={targetPosition} scale={1} {...props}>
+      <mesh ref={turtleRef} position={position} scale={1} {...props}>
         <boxGeometry />
-        <meshStandardMaterial color={color} />
+        <arrowHelper
+          args={[
+            new THREE.Vector3(0, 0, -1),
+            new THREE.Vector3(0, 0, 0),
+            2,
+            0xff0000,
+          ]}
+        />
+        <meshStandardMaterial color={"white"} />
         <Edges linewidth={3} threshold={15} color={"black"} />
       </mesh>
     );
@@ -183,12 +185,11 @@ function App() {
 
   return (
     <main className="main-container">
-      <Heading />
       <Controls />
       <Inventory />
       <Canvas>
         <ambientLight />
-        <Block position={[1, 0, 0]} />
+        <Block position={[2, 0, 0]} />
         <Turtle position={[isX, isY, isZ]} />
         <OrbitControls />
       </Canvas>

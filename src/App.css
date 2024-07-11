@@ -89,6 +89,62 @@ body {
   opacity: 0.7;
 }
 
+.popup-container {
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: max-content;
+  height: max-content;
+  padding: 3em;
+  background-color: #31363f;
+  color: white;
+}
+
+.close-popup {
+  margin: 20px 0 0 0;
+}
+
+.popup-heading {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.popup-input-container {
+  position: relative;
+  vertical-align: middle;
+  width: 250px;
+  margin: 0 auto;
+}
+
+.popup-label {
+  font-size: 20px;
+}
+
+.input-box {
+  border-radius: 5px;
+  padding: 3px;
+  text-align: center;
+  color: black;
+  background-color: white;
+}
+
+.submit-btn {
+  color: black;
+  font-weight: bold;
+  background-color: #a2d2ff;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 7.5px;
+  margin-top: 10%;
+}
+
+.submit-btn:hover,
+.close-popup:hover {
+  opacity: 0.8;
+}
+
 .turtle-name {
   color: white;
   font-size: 20px;
@@ -151,4 +207,3 @@ body {
 .inventory-item:empty {
   padding: 0px !important;
 }
-
