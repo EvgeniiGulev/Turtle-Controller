@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Edges } from "@react-three/drei";
 import "./App.css";
 import Heading from "./components/heading";
@@ -7,43 +7,87 @@ import Inventory from "./components/inventory";
 import Controls from "./components/controls";
 
 function App() {
-  const ws = new WebSocket("ws://localhost:43509");
+  const blockRef = useRef();
+  const turtleRef = useRef();
+  const [isHovered, setIsHovered] = useState(false);
+  const [isX, setIsX] = useState(0);
+  const [isY, setIsY] = useState(0);
+  const [isZ, setIsZ] = useState(0);
+  const [isFacing, setIsFacing] = useState(0);
+  const ws = useRef(null);
 
-  ws.onopen = function () {
-    console.log("Connected to WebSocket server");
-  };
+  useEffect(() => {
+    ws.current = new WebSocket("ws://localhost:43509");
 
-  ws.onclose = function () {
-    console.log("Disconnected from WebSocket server");
-  };
+    ws.current.onopen = () => {
+      console.log("Connected to WebSocket server");
+    };
+
+    ws.current.onclose = () => {
+      console.log("Disconnected from WebSocket server");
+    };
+
+    return () => {
+      ws.current.close();
+    };
+  }, []);
 
   const sendCommand = (command) => {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(command);
+    if (ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(command);
     }
   };
 
   const handleForward = () => {
     sendCommand("forward");
+    setIsFacing((prevFacing) => {
+      if (prevFacing % 4 === 0) {
+        setIsZ((prevZ) => prevZ - 1);
+      } else if (prevFacing % 4 === 2) {
+        setIsZ((prevZ) => prevZ + 1);
+      } else if (prevFacing % 4 === 1) {
+        setIsX((prevX) => prevX + 1);
+      } else if (prevFacing % 4 === 3) {
+        setIsX((prevX) => prevX - 1);
+      }
+      return prevFacing;
+    });
   };
 
   const handleBack = () => {
     sendCommand("back");
+    setIsFacing((prevFacing) => {
+      if (prevFacing % 4 === 0) {
+        setIsZ((prevZ) => prevZ + 1);
+      } else if (prevFacing % 4 === 2) {
+        setIsZ((prevZ) => prevZ - 1);
+      } else if (prevFacing % 4 === 1) {
+        setIsX((prevX) => prevX - 1);
+      } else if (prevFacing % 4 === 3) {
+        setIsX((prevX) => prevX + 1);
+      }
+      return prevFacing;
+    });
   };
 
   const handleLeft = () => {
     sendCommand("left");
+    setIsFacing((prevFacing) => (prevFacing - 1 + 4) % 4);
   };
 
   const handleRight = () => {
     sendCommand("right");
+    setIsFacing((prevFacing) => (prevFacing + 1) % 4);
   };
+
   const handleUp = () => {
     sendCommand("up");
+    setIsY((prevY) => prevY + 1);
   };
 
   const handleDown = () => {
     sendCommand("down");
+    setIsY((prevY) => prevY - 1);
   };
 
   useEffect(() => {
@@ -63,32 +107,52 @@ function App() {
       }
     };
 
-    // Attach the event listener
     window.addEventListener("keydown", handleKeyDown);
 
-    // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
+  const handleOverIn = () => {
+    setIsHovered(!isHovered);
+  };
+
   const Block = ({ ...props }) => {
-    let color = "red";
     return (
-      <mesh {...props} scale="1">
+      <mesh
+        {...props}
+        ref={blockRef}
+        scale="1"
+        onClick={handleOverIn}
+        className="block-mesh"
+      >
         <boxGeometry />
-        <meshStandardMaterial color={color} />
+        <meshStandardMaterial color={"red"} />
         <Edges linewidth={3} threshold={15} color={"black"} />
       </mesh>
     );
   };
 
-  const [isHovered, setIsHovered] = useState(false);
+  const Turtle = ({ position, ...props }) => {
+    const [newPosition, setNewPosition] = useState(position);
+    const moveSpeed = 0.05;
+    useFrame(() => {
+      turtleRef.current.position.x +=
+        (newPosition[0] - turtleRef.current.position.x) * moveSpeed;
+      turtleRef.current.position.y +=
+        (newPosition[1] - turtleRef.current.position.y) * moveSpeed;
+      turtleRef.current.position.z +=
+        (newPosition[2] - turtleRef.current.position.z) * moveSpeed;
+    });
 
-  const Turtle = ({ ...props }) => {
+    useEffect(() => {
+      setNewPosition(position);
+    }, [position]);
+
     let color = "white";
     return (
-      <mesh {...props} scale="1">
+      <mesh {...props} ref={turtleRef} scale={1}>
         <boxGeometry />
         <meshStandardMaterial color={color} />
         <Edges linewidth={3} threshold={15} color={"black"} />
@@ -104,7 +168,7 @@ function App() {
       <Canvas>
         <ambientLight />
         <Block position={[1, 0, 0]} />
-        <Turtle position={[0, 0, 0]} />
+        <Turtle position={[isX, isY, isZ]} />
         <OrbitControls />
       </Canvas>
     </main>
