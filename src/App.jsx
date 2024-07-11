@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Edges } from "@react-three/drei";
 import "./App.css";
@@ -38,7 +38,7 @@ function App() {
     }
   };
 
-  const handleForward = () => {
+  const handleForward = useCallback(() => {
     sendCommand("forward");
     setIsFacing((prevFacing) => {
       if (prevFacing % 4 === 0) {
@@ -52,9 +52,9 @@ function App() {
       }
       return prevFacing;
     });
-  };
+  }, [sendCommand]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     sendCommand("back");
     setIsFacing((prevFacing) => {
       if (prevFacing % 4 === 0) {
@@ -68,51 +68,27 @@ function App() {
       }
       return prevFacing;
     });
-  };
+  }, [sendCommand]);
 
-  const handleLeft = () => {
+  const handleLeft = useCallback(() => {
     sendCommand("left");
     setIsFacing((prevFacing) => (prevFacing - 1 + 4) % 4);
-  };
+  }, [sendCommand]);
 
-  const handleRight = () => {
+  const handleRight = useCallback(() => {
     sendCommand("right");
     setIsFacing((prevFacing) => (prevFacing + 1) % 4);
-  };
+  }, [sendCommand]);
 
-  const handleUp = () => {
+  const handleUp = useCallback(() => {
     sendCommand("up");
     setIsY((prevY) => prevY + 1);
-  };
+  }, [sendCommand]);
 
-  const handleDown = () => {
+  const handleDown = useCallback(() => {
     sendCommand("down");
     setIsY((prevY) => prevY - 1);
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === "w" || event.key === "W") {
-        handleForward();
-      } else if (event.key === "a" || event.key === "A") {
-        handleLeft();
-      } else if (event.key === "s" || event.key === "S") {
-        handleBack();
-      } else if (event.key === "d" || event.key === "D") {
-        handleRight();
-      } else if (event.key === "ArrowUp") {
-        handleUp();
-      } else if (event.key === "ArrowDown") {
-        handleDown();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+  }, [sendCommand]);
 
   const handleOverIn = () => {
     setIsHovered(!isHovered);
@@ -135,24 +111,69 @@ function App() {
   };
 
   const Turtle = ({ position, ...props }) => {
-    const [newPosition, setNewPosition] = useState(position);
-    const moveSpeed = 0.05;
+    const turtleRef = useRef();
+    const [targetPosition, setTargetPosition] = useState(position);
+
+    useEffect(() => {
+      setTargetPosition(position);
+    }, [position]);
+
     useFrame(() => {
-      turtleRef.current.position.x +=
-        (newPosition[0] - turtleRef.current.position.x) * moveSpeed;
-      turtleRef.current.position.y +=
-        (newPosition[1] - turtleRef.current.position.y) * moveSpeed;
-      turtleRef.current.position.z +=
-        (newPosition[2] - turtleRef.current.position.z) * moveSpeed;
+      if (turtleRef.current) {
+        const moveSpeed = 0.05;
+        turtleRef.current.position.x +=
+          (targetPosition[0] - turtleRef.current.position.x) * moveSpeed;
+        turtleRef.current.position.y +=
+          (targetPosition[1] - turtleRef.current.position.y) * moveSpeed;
+        turtleRef.current.position.z +=
+          (targetPosition[2] - turtleRef.current.position.z) * moveSpeed;
+      }
     });
 
     useEffect(() => {
-      setNewPosition(position);
-    }, [position]);
+      const handleKeyDown = (event) => {
+        switch (event.key.toLowerCase()) {
+          case "w":
+            handleForward();
+            break;
+          case "a":
+            handleLeft();
+            break;
+          case "s":
+            handleBack();
+            break;
+          case "d":
+            handleRight();
+            break;
+          case "arrowup":
+            handleUp();
+            break;
+          case "arrowdown":
+            handleDown();
+            break;
+          default:
+            break;
+        }
+      };
 
-    let color = "white";
+      document.addEventListener("keydown", handleKeyDown);
+
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+      };
+    }, [
+      handleForward,
+      handleBack,
+      handleLeft,
+      handleRight,
+      handleUp,
+      handleDown,
+    ]);
+
+    const color = isHovered ? "yellow" : "white";
+
     return (
-      <mesh {...props} ref={turtleRef} scale={1}>
+      <mesh ref={turtleRef} position={targetPosition} scale={1} {...props}>
         <boxGeometry />
         <meshStandardMaterial color={color} />
         <Edges linewidth={3} threshold={15} color={"black"} />
