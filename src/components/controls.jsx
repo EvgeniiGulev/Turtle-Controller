@@ -1,18 +1,18 @@
 import { useState } from "react";
 
+const ws = new WebSocket("ws://localhost:43509");
+
+ws.onopen = function () {
+  console.log("Connected to WebSocket server");
+};
+
+ws.onclose = function () {
+  console.log("Disconnected from WebSocket server");
+};
+
 const Controls = () => {
   const [wasSent, setWasSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const ws = new WebSocket("ws://localhost:43509");
-
-  ws.onopen = function () {
-    console.log("Connected to WebSocket server");
-  };
-
-  ws.onclose = function () {
-    console.log("Disconnected from WebSocket server");
-  };
 
   const sendCommand = (command) => {
     if (ws.readyState === WebSocket.OPEN) {
@@ -54,7 +54,6 @@ const Controls = () => {
   const handleInspect = () => {
     sendCommand("inspect");
     let blockData = null;
-
 
     return blockData;
   };

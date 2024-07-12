@@ -6,6 +6,16 @@ import Inventory from "./components/inventory";
 import Controls from "./components/controls";
 import * as THREE from "three";
 
+const ws = new WebSocket("ws://localhost:43509");
+
+ws.onopen = function () {
+  console.log("Connected to WebSocket server");
+};
+
+ws.onclose = function () {
+  console.log("Disconnected from WebSocket server");
+};
+
 function App() {
   const [isHovered, setIsHovered] = useState(false);
   const [rotationAngle, setRotationAngle] = useState(0);
@@ -13,16 +23,6 @@ function App() {
   const [isY, setIsY] = useState(0);
   const [isZ, setIsZ] = useState(0);
   const [isFacing, setIsFacing] = useState(0);
-
-  const ws = new WebSocket("ws://localhost:43509");
-
-  ws.onopen = function () {
-    console.log("Connected to WebSocket server");
-  };
-
-  ws.onclose = function () {
-    console.log("Disconnected from WebSocket server");
-  };
 
   const sendCommand = (command) => {
     if (ws.readyState === WebSocket.OPEN) {
