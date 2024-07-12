@@ -51,13 +51,141 @@ const Controls = () => {
     }, 5000);
   };
 
-  const handleInspect = () => {
-    sendCommand("inspect");
-    let blockData = null;
+  const blobToJSON = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
 
-    return blockData;
+      reader.onload = () => {
+        const result = reader.result.trim(); // Trim to remove any leading/trailing whitespace
+        if (result.startsWith("{") || result.startsWith("[")) {
+          // Check if the result looks like JSON object or array
+          try {
+            const json = JSON.parse(result);
+            resolve(json);
+          } catch (err) {
+            reject(new Error("Failed to parse JSON: " + err.message));
+          }
+        } else {
+          // If it doesn't look like JSON, resolve with the raw text
+          resolve(result);
+        }
+      };
+
+      reader.onerror = () => {
+        reject(new Error("Failed to read the Blob: " + reader.error));
+      };
+
+      reader.readAsText(blob);
+    });
   };
 
+  const handleInspect = () => {
+    sendCommand("inspect");
+
+    let messageCount = 0;
+
+    // Set up ws.onmessage handler
+    ws.onmessage = async function (event) {
+      try {
+        // Increment the message count
+        messageCount++;
+
+        // Check if this is the second message
+        if (messageCount === 2) {
+          const blockData = await blobToJSON(event.data);
+
+          if (blockData === "Nothing to inspect") {
+            console.log("Nothing to inspect");
+          } else if (typeof blockData === "string") {
+            // Handle plain text data if needed
+            /* console.log("Received plain text:", blockData); */
+          } else {
+            // Handle JSON data
+            /* console.log("Received JSON:", blockData); */
+          }
+
+          // Reset message count for future messages
+          messageCount = 0;
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    return null; // Adjust return value if needed
+  };
+
+  const handleInspectDown = () => {
+    sendCommand("inspectDown");
+
+    let messageCount = 0;
+
+    // Set up ws.onmessage handler
+    ws.onmessage = async function (event) {
+      try {
+        // Increment the message count
+        messageCount++;
+
+        // Check if this is the second message
+        if (messageCount === 2) {
+          const blockData = await blobToJSON(event.data);
+
+          if (blockData === "Nothing to inspect") {
+            console.log("Nothing to inspect");
+          } else if (typeof blockData === "string") {
+            // Handle plain text data if needed
+            /* console.log("Received plain text:", blockData); */
+          } else {
+            // Handle JSON data
+            /* console.log("Received JSON:", blockData); */
+          }
+
+          // Reset message count for future messages
+          messageCount = 0;
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    return null; // Adjust return value if needed
+  };
+
+  const handleInspectUp = () => {
+    sendCommand("inspectUp");
+
+    let messageCount = 0;
+
+    // Set up ws.onmessage handler
+    ws.onmessage = async function (event) {
+      try {
+        // Increment the message count
+        messageCount++;
+
+        // Check if this is the second message
+        if (messageCount === 2) {
+          const blockData = await blobToJSON(event.data);
+
+          if (blockData === "Nothing to inspect") {
+            console.log("Nothing to inspect");
+          } else if (typeof blockData === "string") {
+            // Handle plain text data if needed
+            /* console.log("Received plain text:", blockData); */
+          } else {
+            // Handle JSON data
+            /* console.log("Received JSON:", blockData); */
+          }
+
+          // Reset message count for future messages
+          messageCount = 0;
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    return null; // Adjust return value if needed
+  };
   const handleExcavateSubmit = () => {
     const width = document.querySelector(".excavate-width").value;
     const height = document.querySelector(".excavate-height").value;
@@ -152,10 +280,7 @@ const Controls = () => {
           </button>
         </li>
         <li className="controls-item">
-          <button
-            className="controls-btn-direction"
-            onClick={() => sendCommand("inspectUp")}
-          >
+          <button className="controls-btn-direction" onClick={handleInspectUp}>
             Up
           </button>
           <button className="controls-btn-main" onClick={handleInspect}>
@@ -163,7 +288,7 @@ const Controls = () => {
           </button>
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("inspectDown")}
+            onClick={handleInspectDown}
           >
             Down
           </button>

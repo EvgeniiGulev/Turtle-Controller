@@ -4,6 +4,7 @@ import { OrbitControls, Edges } from "@react-three/drei";
 import "./App.css";
 import Inventory from "./components/inventory";
 import Controls from "./components/controls";
+import Tooltip from "./components/tooltip";
 import * as THREE from "three";
 
 const ws = new WebSocket("ws://localhost:43509");
@@ -23,6 +24,10 @@ function App() {
   const [isY, setIsY] = useState(0);
   const [isZ, setIsZ] = useState(0);
   const [isFacing, setIsFacing] = useState(0);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipText, setTooltipText] = useState("");
+  const [blockCollision, setBlockCollision] = useState(false);
 
   const sendCommand = (command) => {
     if (ws.readyState === WebSocket.OPEN) {
@@ -86,23 +91,34 @@ function App() {
     setIsY((prevY) => prevY - 1);
   }, [sendCommand]);
 
-  const handleOverIn = () => {
-    setIsHovered(!isHovered);
+  const handleTooltip = (event, text) => {
+    setTooltipText(text);
+    setTooltipPosition({ x: event.clientX, y: event.clientY });
+    setShowTooltip(true);
   };
 
-  const Block = ({ ...props }) => {
+  useEffect(() => {
+    if (showTooltip) {
+      const timer = setTimeout(() => {
+        setShowTooltip(false);
+      }, 2000);
+      return () => clearTimeout(timer); // Cleanup the timer on component unmount or if showTooltip changes
+    }
+  }, [showTooltip]);
+
+  const Block = ({ text, ...props }) => {
     const blockRef = useRef();
-    const color = isHovered ? "teal" : "red";
+
     return (
       <mesh
         {...props}
         ref={blockRef}
         scale="1"
-        onClick={handleOverIn}
         className="block-mesh"
+        onClick={(event) => handleTooltip(event, text)}
       >
         <boxGeometry />
-        <meshStandardMaterial color={color} />
+        <meshStandardMaterial color={"blue"} />
         <Edges linewidth={3} threshold={15} color={"black"} />
       </mesh>
     );
@@ -176,14 +192,15 @@ function App() {
 
   return (
     <main className="main-container">
-      <Controls />
+      <Controls blockCollision={blockCollision} />
       <Inventory />
       <Canvas>
         <ambientLight />
-        <Block position={[2, 0, 0]} />
-        <Turtle position={[isX, isY, isZ]} />
+        <Block position={[2, 0, 0]} text={"minecraft:block"} />
+        <Turtle position={[isX, isY, isZ]} key={"Bob"} />
         <OrbitControls />
       </Canvas>
+      {showTooltip && <Tooltip text={tooltipText} position={tooltipPosition} />}
     </main>
   );
 }
