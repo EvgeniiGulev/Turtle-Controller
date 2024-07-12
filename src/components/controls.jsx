@@ -17,10 +17,10 @@ const Controls = () => {
   const sendCommand = (command) => {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(command);
-      setErrorMessage(""); // Clear any previous error message
+      setErrorMessage("");
     } else {
       setErrorMessage("Problem sending command! Please check your connection.");
-      setTimeout(() => setErrorMessage(""), 3000); // Clear error message after 3 seconds
+      setTimeout(() => setErrorMessage(""), 3000);
     }
   };
 
@@ -51,13 +51,21 @@ const Controls = () => {
     }, 5000);
   };
 
+  const handleInspect = () => {
+    sendCommand("inspect");
+    let blockData = null;
+
+
+    return blockData;
+  };
+
   const handleExcavateSubmit = () => {
     const width = document.querySelector(".excavate-width").value;
     const height = document.querySelector(".excavate-height").value;
     const depth = document.querySelector(".excavate-depth").value;
 
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send("excavate " + width + " " + height + " " + depth + " ");
+      ws.send("excavate " + width + " " + height + " " + depth);
       handleWasSent();
       setErrorMessage(""); // Clear any previous error message
     } else {
@@ -72,7 +80,7 @@ const Controls = () => {
     const depth = document.querySelector(".tunnel-depth").value;
 
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send("tunnel " + width + " " + height + " " + depth + " ");
+      ws.send("tunnel " + width + " " + height + " " + depth);
       handleWasSent();
       setErrorMessage(""); // Clear any previous error message
     } else {
@@ -151,10 +159,7 @@ const Controls = () => {
           >
             Up
           </button>
-          <button
-            className="controls-btn-main"
-            onClick={() => sendCommand("inspect")}
-          >
+          <button className="controls-btn-main" onClick={handleInspect}>
             Inspect
           </button>
           <button

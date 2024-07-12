@@ -13,27 +13,22 @@ function App() {
   const [isY, setIsY] = useState(0);
   const [isZ, setIsZ] = useState(0);
   const [isFacing, setIsFacing] = useState(0);
-  const ws = useRef(null);
 
-  useEffect(() => {
-    ws.current = new WebSocket("ws://localhost:43509");
+  const ws = new WebSocket("ws://localhost:43509");
 
-    ws.current.onopen = () => {
-      console.log("Connected to WebSocket server");
-    };
+  ws.onopen = function () {
+    console.log("Connected to WebSocket server");
+  };
 
-    ws.current.onclose = () => {
-      console.log("Disconnected from WebSocket server");
-    };
-
-    return () => {
-      ws.current.close();
-    };
-  }, []);
+  ws.onclose = function () {
+    console.log("Disconnected from WebSocket server");
+  };
 
   const sendCommand = (command) => {
-    if (ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(command);
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(command);
+    } else {
+      console.log("Problem sending command! Please check your connection.");
     }
   };
 
@@ -93,10 +88,6 @@ function App() {
 
   const handleOverIn = () => {
     setIsHovered(!isHovered);
-  };
-
-  const handleGetBlockData = () => {
-    ws.receive();
   };
 
   const Block = ({ ...props }) => {
