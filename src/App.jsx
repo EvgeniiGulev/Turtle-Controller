@@ -101,9 +101,6 @@ function App() {
   };
 
   const handleAddBlock = useCallback(() => {
-    setBlockDirection(0);
-    setBlockCollision(false);
-    setBlockName("");
     let x = 0,
       y = 0,
       z = 0;
@@ -134,9 +131,6 @@ function App() {
   }, [blockDirection, isFacing, isX, isY, isZ, blockName]);
 
   const handleRemoveBlock = useCallback(() => {
-    setBlockDirection(0);
-    setBlockCollision(false);
-    setBlockName("");
     let x = 0,
       y = 0,
       z = 0;
@@ -183,8 +177,12 @@ function App() {
       handleAddBlock();
     } else if (blockName === "None") {
       handleRemoveBlock();
+    } else {
+      setBlockCollision(false);
     }
+    setBlockDirection(0);
     setBlockCollision(false);
+    setBlockName("");
   }, [blockCollision, blockName, handleAddBlock, handleRemoveBlock]);
 
   const Block = ({ text, position, ...props }) => {

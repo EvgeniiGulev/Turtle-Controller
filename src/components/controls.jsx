@@ -101,8 +101,6 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
             /* console.log("Received JSON:", blockData); */
           }
 
-          // Reset message count for future messages
-          messageCount = 0;
           setBlockDirection(0);
           setBlockCollision(true);
           setBlockName(blockData);
