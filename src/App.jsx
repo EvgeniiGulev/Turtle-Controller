@@ -5,6 +5,7 @@ import "./App.css";
 import Inventory from "./components/inventory";
 import Controls from "./components/controls";
 import Tooltip from "./components/tooltip";
+import Heading from "./components/heading";
 import * as THREE from "three";
 
 const ws = new WebSocket("ws://localhost:43509");
@@ -18,7 +19,6 @@ ws.onclose = function () {
 };
 
 function App() {
-  const [isHovered, setIsHovered] = useState(false);
   const [rotationAngle, setRotationAngle] = useState(0);
   const [isX, setIsX] = useState(0);
   const [isY, setIsY] = useState(0);
@@ -28,6 +28,9 @@ function App() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipText, setTooltipText] = useState("");
   const [blockCollision, setBlockCollision] = useState(false);
+  const [blockName, setBlockName] = useState("");
+  const [blockDirection, setBlockDirection] = useState(0);
+  const [worldBlocks, setWorldBlocks] = useState([]);
 
   const sendCommand = (command) => {
     if (ws.readyState === WebSocket.OPEN) {
@@ -97,22 +100,95 @@ function App() {
     setShowTooltip(true);
   };
 
+  const handleAddBlock = useCallback(() => {
+    let x = 0,
+      y = 0,
+      z = 0;
+    switch (blockDirection) {
+      case 0:
+        if (isFacing === 0) z--;
+        else if (isFacing === 1) x++;
+        else if (isFacing === 2) z++;
+        else if (isFacing === 3) x--;
+        break;
+      case 1:
+        y--;
+        break;
+      case 2:
+        y++;
+        break;
+      default:
+        break;
+    }
+    setWorldBlocks((prevWorldBlocks) => [
+      ...prevWorldBlocks,
+      {
+        id: prevWorldBlocks.length,
+        position: [isX + x, isY + y, isZ + z],
+        name: blockName,
+      },
+    ]);
+  }, [blockDirection, isFacing, isX, isY, isZ, blockName]);
+
+  const handleRemoveBlock = useCallback(() => {
+    let x = 0,
+      y = 0,
+      z = 0;
+    switch (blockDirection) {
+      case 0:
+        if (isFacing === 0) z--;
+        else if (isFacing === 1) x++;
+        else if (isFacing === 2) z++;
+        else if (isFacing === 3) x--;
+        break;
+      case 1:
+        y--;
+        break;
+      case 2:
+        y++;
+        break;
+      default:
+        break;
+    }
+
+    const positionToRemove = [isX + x, isY + y, isZ + z];
+
+    setWorldBlocks((prevWorldBlocks) =>
+      prevWorldBlocks.filter(
+        (block) =>
+          block.position[0] !== positionToRemove[0] ||
+          block.position[1] !== positionToRemove[1] ||
+          block.position[2] !== positionToRemove[2]
+      )
+    );
+    console.log("Removed block at position:", positionToRemove);
+  }, [blockDirection, isFacing, isX, isY, isZ]);
+
   useEffect(() => {
     if (showTooltip) {
-      const timer = setTimeout(() => {
-        setShowTooltip(false);
-      }, 2000);
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount or if showTooltip changes
+      const timer = setTimeout(() => setShowTooltip(false), 2000);
+      return () => clearTimeout(timer);
     }
   }, [showTooltip]);
 
-  const Block = ({ text, ...props }) => {
+  useEffect(() => {
+    console.log(blockName);
+    if (blockCollision) {
+      handleAddBlock();
+    } else if (blockName === "None") {
+      handleRemoveBlock();
+    }
+    setBlockCollision(false);
+  }, [blockCollision, blockName, handleAddBlock, handleRemoveBlock]);
+
+  const Block = ({ text, position, ...props }) => {
     const blockRef = useRef();
 
     return (
       <mesh
         {...props}
         ref={blockRef}
+        position={position}
         scale="1"
         className="block-mesh"
         onClick={(event) => handleTooltip(event, text)}
@@ -192,12 +268,19 @@ function App() {
 
   return (
     <main className="main-container">
-      <Controls blockCollision={blockCollision} />
+      <Heading />
+      <Controls
+        setBlockCollision={setBlockCollision}
+        setBlockName={setBlockName}
+        setBlockDirection={setBlockDirection}
+      />
       <Inventory />
-      <Canvas>
+      <Canvas camera={{ position: [isX, isY + 1, isZ + 5] }}>
         <ambientLight />
-        <Block position={[2, 0, 0]} text={"minecraft:block"} />
         <Turtle position={[isX, isY, isZ]} key={"Bob"} />
+        {worldBlocks.map((block) => (
+          <Block position={block.position} text={block.name} key={block.id} />
+        ))}
         <OrbitControls />
       </Canvas>
       {showTooltip && <Tooltip text={tooltipText} position={tooltipPosition} />}

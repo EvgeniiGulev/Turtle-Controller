@@ -10,7 +10,7 @@ ws.onclose = function () {
   console.log("Disconnected from WebSocket server");
 };
 
-const Controls = () => {
+const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
   const [wasSent, setWasSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -56,9 +56,8 @@ const Controls = () => {
       const reader = new FileReader();
 
       reader.onload = () => {
-        const result = reader.result.trim(); // Trim to remove any leading/trailing whitespace
+        const result = reader.result.trim();
         if (result.startsWith("{") || result.startsWith("[")) {
-          // Check if the result looks like JSON object or array
           try {
             const json = JSON.parse(result);
             resolve(json);
@@ -66,7 +65,6 @@ const Controls = () => {
             reject(new Error("Failed to parse JSON: " + err.message));
           }
         } else {
-          // If it doesn't look like JSON, resolve with the raw text
           resolve(result);
         }
       };
@@ -84,18 +82,17 @@ const Controls = () => {
 
     let messageCount = 0;
 
-    // Set up ws.onmessage handler
     ws.onmessage = async function (event) {
       try {
-        // Increment the message count
         messageCount++;
 
-        // Check if this is the second message
         if (messageCount === 2) {
           const blockData = await blobToJSON(event.data);
-
-          if (blockData === "Nothing to inspect") {
-            console.log("Nothing to inspect");
+          if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
+            console.log("Nothing to inspect or invalid block data");
+            setBlockName("None");
+            setBlockCollision(false);
+            return;
           } else if (typeof blockData === "string") {
             // Handle plain text data if needed
             /* console.log("Received plain text:", blockData); */
@@ -106,68 +103,33 @@ const Controls = () => {
 
           // Reset message count for future messages
           messageCount = 0;
+          setBlockDirection(0);
+          setBlockCollision(true);
+          setBlockName(blockData);
         }
       } catch (error) {
         console.error("Error:", error);
       }
     };
 
-    return null; // Adjust return value if needed
+    return null;
   };
-
-  const handleInspectDown = () => {
-    sendCommand("inspectDown");
-
-    let messageCount = 0;
-
-    // Set up ws.onmessage handler
-    ws.onmessage = async function (event) {
-      try {
-        // Increment the message count
-        messageCount++;
-
-        // Check if this is the second message
-        if (messageCount === 2) {
-          const blockData = await blobToJSON(event.data);
-
-          if (blockData === "Nothing to inspect") {
-            console.log("Nothing to inspect");
-          } else if (typeof blockData === "string") {
-            // Handle plain text data if needed
-            /* console.log("Received plain text:", blockData); */
-          } else {
-            // Handle JSON data
-            /* console.log("Received JSON:", blockData); */
-          }
-
-          // Reset message count for future messages
-          messageCount = 0;
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    return null; // Adjust return value if needed
-  };
-
   const handleInspectUp = () => {
     sendCommand("inspectUp");
 
     let messageCount = 0;
 
-    // Set up ws.onmessage handler
     ws.onmessage = async function (event) {
       try {
-        // Increment the message count
         messageCount++;
 
-        // Check if this is the second message
         if (messageCount === 2) {
           const blockData = await blobToJSON(event.data);
-
-          if (blockData === "Nothing to inspect") {
-            console.log("Nothing to inspect");
+          if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
+            console.log("Nothing to inspect or invalid block data");
+            setBlockName("None");
+            setBlockCollision(false);
+            return;
           } else if (typeof blockData === "string") {
             // Handle plain text data if needed
             /* console.log("Received plain text:", blockData); */
@@ -178,13 +140,53 @@ const Controls = () => {
 
           // Reset message count for future messages
           messageCount = 0;
+          setBlockDirection(2);
+          setBlockCollision(true);
+          setBlockName(blockData);
         }
       } catch (error) {
         console.error("Error:", error);
       }
     };
 
-    return null; // Adjust return value if needed
+    return null;
+  };
+  const handleInspectDown = () => {
+    sendCommand("inspectDown");
+
+    let messageCount = 0;
+
+    ws.onmessage = async function (event) {
+      try {
+        messageCount++;
+
+        if (messageCount === 2) {
+          const blockData = await blobToJSON(event.data);
+          if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
+            console.log("Nothing to inspect or invalid block data");
+            setBlockName("None");
+            setBlockCollision(false);
+            return;
+          } else if (typeof blockData === "string") {
+            // Handle plain text data if needed
+            /* console.log("Received plain text:", blockData); */
+          } else {
+            // Handle JSON data
+            /* console.log("Received JSON:", blockData); */
+          }
+
+          // Reset message count for future messages
+          messageCount = 0;
+          setBlockDirection(1);
+          setBlockCollision(true);
+          setBlockName(blockData);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    return null;
   };
   const handleExcavateSubmit = () => {
     const width = document.querySelector(".excavate-width").value;
@@ -194,10 +196,10 @@ const Controls = () => {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send("excavate " + width + " " + height + " " + depth);
       handleWasSent();
-      setErrorMessage(""); // Clear any previous error message
+      setErrorMessage("");
     } else {
       setErrorMessage("Problem sending command! Please check your connection.");
-      setTimeout(() => setErrorMessage(""), 5000); // Clear error message after 3 seconds
+      setTimeout(() => setErrorMessage(""), 5000);
     }
   };
 
@@ -209,10 +211,10 @@ const Controls = () => {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send("tunnel " + width + " " + height + " " + depth);
       handleWasSent();
-      setErrorMessage(""); // Clear any previous error message
+      setErrorMessage("");
     } else {
       setErrorMessage("Problem sending command! Please check your connection.");
-      setTimeout(() => setErrorMessage(""), 5000); // Clear error message after 3 seconds
+      setTimeout(() => setErrorMessage(""), 5000);
     }
   };
 
