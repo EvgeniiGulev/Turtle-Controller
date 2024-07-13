@@ -180,7 +180,6 @@ function App() {
     } else {
       setBlockCollision(false);
     }
-    setBlockDirection(0);
     setBlockCollision(false);
     setBlockName("");
   }, [blockCollision, blockName, handleAddBlock, handleRemoveBlock]);

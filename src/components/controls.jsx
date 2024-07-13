@@ -112,6 +112,7 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
 
     return null;
   };
+
   const handleInspectUp = () => {
     sendCommand("inspectUp");
 
@@ -136,8 +137,6 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
             /* console.log("Received JSON:", blockData); */
           }
 
-          // Reset message count for future messages
-          messageCount = 0;
           setBlockDirection(2);
           setBlockCollision(true);
           setBlockName(blockData);
@@ -149,6 +148,7 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
 
     return null;
   };
+
   const handleInspectDown = () => {
     sendCommand("inspectDown");
 
@@ -173,8 +173,6 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
             /* console.log("Received JSON:", blockData); */
           }
 
-          // Reset message count for future messages
-          messageCount = 0;
           setBlockDirection(1);
           setBlockCollision(true);
           setBlockName(blockData);
@@ -186,6 +184,7 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
 
     return null;
   };
+
   const handleExcavateSubmit = () => {
     const width = document.querySelector(".excavate-width").value;
     const height = document.querySelector(".excavate-height").value;
