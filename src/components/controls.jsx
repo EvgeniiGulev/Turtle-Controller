@@ -90,6 +90,7 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
           const blockData = await blobToJSON(event.data);
           if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
             console.log("Nothing to inspect or invalid block data");
+            setBlockDirection(0);
             setBlockName("None");
             setBlockCollision(false);
             return;
@@ -126,6 +127,7 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
           const blockData = await blobToJSON(event.data);
           if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
             console.log("Nothing to inspect or invalid block data");
+            setBlockDirection(2);
             setBlockName("None");
             setBlockCollision(false);
             return;
@@ -162,6 +164,7 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
           const blockData = await blobToJSON(event.data);
           if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
             console.log("Nothing to inspect or invalid block data");
+            setBlockDirection(1);
             setBlockName("None");
             setBlockCollision(false);
             return;

@@ -131,6 +131,7 @@ function App() {
   }, [blockDirection, isFacing, isX, isY, isZ, blockName]);
 
   const handleRemoveBlock = useCallback(() => {
+    console.log(blockDirection);
     let x = 0,
       y = 0,
       z = 0;
