@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  //SendCommand
+  sendCommand,
   //Tunnel
   handleCloseTunnelPopup,
   handleOpenTunnelPopup,
@@ -72,19 +74,19 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("digUp")}
+            onClick={() => sendCommand(ws, "digUp")}
           >
             Up
           </button>
           <button
             className="controls-btn-main"
-            onClick={() => sendCommand("dig")}
+            onClick={() => sendCommand(ws, "dig")}
           >
             Dig
           </button>
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("digDown")}
+            onClick={() => sendCommand(ws, "digDown")}
           >
             Down
           </button>
@@ -92,19 +94,19 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("placeUp")}
+            onClick={() => sendCommand(ws, "placeUp")}
           >
             Up
           </button>
           <button
             className="controls-btn-main"
-            onClick={() => sendCommand("place")}
+            onClick={() => sendCommand(ws, "place")}
           >
             Place
           </button>
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("placeDown")}
+            onClick={() => sendCommand(ws, "placeDown")}
           >
             Down
           </button>
@@ -112,19 +114,19 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("suckUp")}
+            onClick={() => sendCommand(ws, "suckUp")}
           >
             Up
           </button>
           <button
             className="controls-btn-main"
-            onClick={() => sendCommand("suck")}
+            onClick={() => sendCommand(ws, "suck")}
           >
             Suck
           </button>
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("suckDown")}
+            onClick={() => sendCommand(ws, "suckDown")}
           >
             Down
           </button>
@@ -173,19 +175,19 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("compareUp")}
+            onClick={() => sendCommand(ws, "compareUp")}
           >
             Up
           </button>
           <button
             className="controls-btn-main"
-            onClick={() => sendCommand("compare")}
+            onClick={() => sendCommand(ws, "compare")}
           >
             Compare
           </button>
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("compareDown")}
+            onClick={() => sendCommand(ws, "compareDown")}
           >
             Down
           </button>
@@ -193,19 +195,19 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("craft64")}
+            onClick={() => sendCommand(ws, "craft64")}
           >
             x64
           </button>
           <button
             className="controls-btn-main"
-            onClick={() => sendCommand("craft")}
+            onClick={() => sendCommand(ws, "craft")}
           >
             Craft
           </button>
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand("craft1")}
+            onClick={() => sendCommand(ws, "craft1")}
           >
             x1
           </button>
@@ -219,7 +221,7 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-option"
-            onClick={() => sendCommand("getFuel")}
+            onClick={() => sendCommand(ws, "getFuel")}
           >
             GetFuel
           </button>
@@ -227,7 +229,7 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-option"
-            onClick={() => sendCommand("refuel")}
+            onClick={() => sendCommand(ws, "refuel")}
           >
             Refuel
           </button>
@@ -235,7 +237,7 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-option"
-            onClick={() => sendCommand("edit")}
+            onClick={() => sendCommand(ws, "edit")}
           >
             Edit
           </button>
@@ -249,13 +251,13 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-utils"
-            onClick={() => sendCommand("update")}
+            onClick={() => sendCommand(ws, "update")}
           >
             Update
           </button>
           <button
             className="controls-btn-utils"
-            onClick={() => sendCommand("stop")}
+            onClick={() => sendCommand(ws, "stop")}
           >
             Stop
           </button>
@@ -277,13 +279,13 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-utils"
-            onClick={() => sendCommand("setHome")}
+            onClick={() => sendCommand(ws, "setHome")}
           >
             SetHome
           </button>
           <button
             className="controls-btn-utils"
-            onClick={() => sendCommand("return")}
+            onClick={() => sendCommand(ws, "return")}
           >
             Return
           </button>
