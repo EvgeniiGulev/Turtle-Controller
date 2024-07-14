@@ -1,45 +1,32 @@
 import { useState } from "react";
+import {
+  //Tunnel
+  handleCloseTunnelPopup,
+  handleOpenTunnelPopup,
+  //Excavate
+  handleCloseExcavatePopup,
+  handleOpenExcavatePopup,
+  //Inspect
+  handleInspect,
+  handleInspectUp,
+  handleInspectDown,
+} from "../handlers/handlers";
 
-const Controls = ({ ws, setBlockCollision, setBlockName, setBlockDirection }) => {
+const Controls = ({
+  ws,
+  setBlockCollision,
+  setBlockName,
+  setBlockDirection,
+}) => {
   const [wasSent, setWasSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   ws.onopen = function () {
     console.log("Connected to WebSocket server");
   };
-  
+
   ws.onclose = function () {
     console.log("Disconnected from WebSocket server");
-  };
-
-  const sendCommand = (command) => {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(command);
-      setErrorMessage("");
-    } else {
-      setErrorMessage("Problem sending command! Please check your connection.");
-      setTimeout(() => setErrorMessage(""), 3000);
-    }
-  };
-
-  const handleOpenExcavatePopup = () => {
-    const modal = document.querySelector(".excavate-popup");
-    modal.showModal();
-  };
-
-  const handleCloseExcavatePopup = () => {
-    const modal = document.querySelector(".excavate-popup");
-    modal.close();
-  };
-
-  const handleOpenTunnelPopup = () => {
-    const modal = document.querySelector(".tunnel-popup");
-    modal.showModal();
-  };
-
-  const handleCloseTunnelPopup = () => {
-    const modal = document.querySelector(".tunnel-popup");
-    modal.close();
   };
 
   const handleWasSent = () => {
@@ -49,141 +36,6 @@ const Controls = ({ ws, setBlockCollision, setBlockName, setBlockDirection }) =>
     }, 5000);
   };
 
-  const blobToJSON = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        const result = reader.result.trim();
-        if (result.startsWith("{") || result.startsWith("[")) {
-          try {
-            const json = JSON.parse(result);
-            resolve(json);
-          } catch (err) {
-            reject(new Error("Failed to parse JSON: " + err.message));
-          }
-        } else {
-          resolve(result);
-        }
-      };
-
-      reader.onerror = () => {
-        reject(new Error("Failed to read the Blob: " + reader.error));
-      };
-
-      reader.readAsText(blob);
-    });
-  };
-
-  const handleInspect = () => {
-    sendCommand("inspect");
-
-    let messageCount = 0;
-
-    ws.onmessage = async function (event) {
-      try {
-        messageCount++;
-
-        if (messageCount === 2) {
-          const blockData = await blobToJSON(event.data);
-          if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
-            console.log("Nothing to inspect or invalid block data");
-            setBlockName("None");
-            setBlockCollision(false);
-            return;
-          } else if (typeof blockData === "string") {
-            // Handle plain text data if needed
-            /* console.log("Received plain text:", blockData); */
-          } else {
-            // Handle JSON data
-            /* console.log("Received JSON:", blockData); */
-          }
-
-          setBlockDirection(0);
-          setBlockCollision(true);
-          setBlockName(blockData);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    return null;
-  };
-  const handleInspectUp = () => {
-    sendCommand("inspectUp");
-
-    let messageCount = 0;
-
-    ws.onmessage = async function (event) {
-      try {
-        messageCount++;
-
-        if (messageCount === 2) {
-          const blockData = await blobToJSON(event.data);
-          if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
-            console.log("Nothing to inspect or invalid block data");
-            setBlockName("None");
-            setBlockCollision(false);
-            return;
-          } else if (typeof blockData === "string") {
-            // Handle plain text data if needed
-            /* console.log("Received plain text:", blockData); */
-          } else {
-            // Handle JSON data
-            /* console.log("Received JSON:", blockData); */
-          }
-
-          // Reset message count for future messages
-          messageCount = 0;
-          setBlockDirection(2);
-          setBlockCollision(true);
-          setBlockName(blockData);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    return null;
-  };
-  const handleInspectDown = () => {
-    sendCommand("inspectDown");
-
-    let messageCount = 0;
-
-    ws.onmessage = async function (event) {
-      try {
-        messageCount++;
-
-        if (messageCount === 2) {
-          const blockData = await blobToJSON(event.data);
-          if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
-            console.log("Nothing to inspect or invalid block data");
-            setBlockName("None");
-            setBlockCollision(false);
-            return;
-          } else if (typeof blockData === "string") {
-            // Handle plain text data if needed
-            /* console.log("Received plain text:", blockData); */
-          } else {
-            // Handle JSON data
-            /* console.log("Received JSON:", blockData); */
-          }
-
-          // Reset message count for future messages
-          messageCount = 0;
-          setBlockDirection(1);
-          setBlockCollision(true);
-          setBlockName(blockData);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    return null;
-  };
   const handleExcavateSubmit = () => {
     const width = document.querySelector(".excavate-width").value;
     const height = document.querySelector(".excavate-height").value;
@@ -278,15 +130,42 @@ const Controls = ({ ws, setBlockCollision, setBlockName, setBlockDirection }) =>
           </button>
         </li>
         <li className="controls-item">
-          <button className="controls-btn-direction" onClick={handleInspectUp}>
+          <button
+            className="controls-btn-direction"
+            onClick={() =>
+              handleInspectUp(
+                ws,
+                setBlockCollision,
+                setBlockName,
+                setBlockDirection
+              )
+            }
+          >
             Up
           </button>
-          <button className="controls-btn-main" onClick={handleInspect}>
+          <button
+            className="controls-btn-main"
+            onClick={() =>
+              handleInspect(
+                ws,
+                setBlockCollision,
+                setBlockName,
+                setBlockDirection
+              )
+            }
+          >
             Inspect
           </button>
           <button
             className="controls-btn-direction"
-            onClick={handleInspectDown}
+            onClick={() =>
+              handleInspectDown(
+                ws,
+                setBlockCollision,
+                setBlockName,
+                setBlockDirection
+              )
+            }
           >
             Down
           </button>
