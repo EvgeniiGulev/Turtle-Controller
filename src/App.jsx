@@ -8,17 +8,18 @@ import Tooltip from "./components/tooltip";
 import Heading from "./components/heading";
 import * as THREE from "three";
 
-const ws = new WebSocket("ws://localhost:43509");
-
-ws.onopen = function () {
-  console.log("Connected to WebSocket server");
-};
-
-ws.onclose = function () {
-  console.log("Disconnected from WebSocket server");
-};
 
 function App() {
+  const ws = new WebSocket("ws://localhost:43509");
+
+  ws.onopen = function () {
+    console.log("Connected to WebSocket server");
+  };
+
+  ws.onclose = function () {
+    console.log("Disconnected from WebSocket server");
+  };
+
   const [rotationAngle, setRotationAngle] = useState(0);
   const [isX, setIsX] = useState(0);
   const [isY, setIsY] = useState(0);
@@ -131,7 +132,6 @@ function App() {
   }, [blockDirection, isFacing, isX, isY, isZ, blockName]);
 
   const handleRemoveBlock = useCallback(() => {
-    console.log(blockDirection);
     let x = 0,
       y = 0,
       z = 0;
@@ -181,6 +181,7 @@ function App() {
     } else {
       setBlockCollision(false);
     }
+    setBlockDirection(0);
     setBlockCollision(false);
     setBlockName("");
   }, [blockCollision, blockName, handleAddBlock, handleRemoveBlock]);
@@ -277,6 +278,7 @@ function App() {
         setBlockCollision={setBlockCollision}
         setBlockName={setBlockName}
         setBlockDirection={setBlockDirection}
+        ws={ws}
       />
       <Inventory />
       <Canvas camera={{ position: [isX, isY + 1, isZ + 5] }}>

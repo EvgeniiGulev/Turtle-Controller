@@ -1,18 +1,16 @@
 import { useState } from "react";
 
-const ws = new WebSocket("ws://localhost:43509");
-
-ws.onopen = function () {
-  console.log("Connected to WebSocket server");
-};
-
-ws.onclose = function () {
-  console.log("Disconnected from WebSocket server");
-};
-
-const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
+const Controls = ({ ws, setBlockCollision, setBlockName, setBlockDirection }) => {
   const [wasSent, setWasSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  ws.onopen = function () {
+    console.log("Connected to WebSocket server");
+  };
+  
+  ws.onclose = function () {
+    console.log("Disconnected from WebSocket server");
+  };
 
   const sendCommand = (command) => {
     if (ws.readyState === WebSocket.OPEN) {
@@ -90,7 +88,6 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
           const blockData = await blobToJSON(event.data);
           if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
             console.log("Nothing to inspect or invalid block data");
-            setBlockDirection(0);
             setBlockName("None");
             setBlockCollision(false);
             return;
@@ -113,7 +110,6 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
 
     return null;
   };
-
   const handleInspectUp = () => {
     sendCommand("inspectUp");
 
@@ -127,7 +123,6 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
           const blockData = await blobToJSON(event.data);
           if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
             console.log("Nothing to inspect or invalid block data");
-            setBlockDirection(2);
             setBlockName("None");
             setBlockCollision(false);
             return;
@@ -139,6 +134,8 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
             /* console.log("Received JSON:", blockData); */
           }
 
+          // Reset message count for future messages
+          messageCount = 0;
           setBlockDirection(2);
           setBlockCollision(true);
           setBlockName(blockData);
@@ -150,7 +147,6 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
 
     return null;
   };
-
   const handleInspectDown = () => {
     sendCommand("inspectDown");
 
@@ -164,7 +160,6 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
           const blockData = await blobToJSON(event.data);
           if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
             console.log("Nothing to inspect or invalid block data");
-            setBlockDirection(1);
             setBlockName("None");
             setBlockCollision(false);
             return;
@@ -176,6 +171,8 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
             /* console.log("Received JSON:", blockData); */
           }
 
+          // Reset message count for future messages
+          messageCount = 0;
           setBlockDirection(1);
           setBlockCollision(true);
           setBlockName(blockData);
@@ -187,7 +184,6 @@ const Controls = ({ setBlockCollision, setBlockName, setBlockDirection }) => {
 
     return null;
   };
-
   const handleExcavateSubmit = () => {
     const width = document.querySelector(".excavate-width").value;
     const height = document.querySelector(".excavate-height").value;
