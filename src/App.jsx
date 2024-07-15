@@ -19,6 +19,7 @@ import {
   handleRemoveBlock,
   handleBlockColor,
   getBlockColor,
+  handleInspect,
 } from "./handlers/handlers";
 
 function App() {
@@ -47,7 +48,7 @@ function App() {
   const [assignColor, setAssignColor] = useState(null);
 
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleKeyDown = async (event) => {
       switch (event.key.toLowerCase()) {
         case "w":
           handleForward(ws, setIsFacing, setPosition);
@@ -95,15 +96,15 @@ function App() {
   useEffect(() => {
     const addOrRemoveBlock = async () => {
       if (blockCollision) {
-        console.log("Add Block: " + blockName);
+        /*         console.log("Add Block: " + blockName); */
 
         handleBlockColor(blockName, setBlockColor, blockColor);
 
-        await new Promise((resolve) => setTimeout(resolve, 1));
+        await new Promise((resolve) => setTimeout(resolve, 3));
 
         getBlockColor(blockName, blockColor, setAssignColor);
 
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 3));
 
         handleAddBlock(
           blockDirection,
@@ -116,7 +117,7 @@ function App() {
           assignColor
         );
       } else if (blockName === "None") {
-        console.log("Remove Block: " + blockName);
+        /*         console.log("Remove Block: " + blockName); */
 
         handleRemoveBlock(
           blockDirection,
