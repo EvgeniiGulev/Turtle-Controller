@@ -1,19 +1,24 @@
 import React, { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { Edges } from "@react-three/drei";
+import { useSpring, a } from "@react-spring/three";
 
-const Turtle = ({ position, rotationAngle = 0, ...props }) => {
+const Turtle = ({ position, rotationAngle, ...props }) => {
   const turtleRef = useRef();
 
-  useFrame(() => {
-    if (turtleRef.current) {
-      turtleRef.current.rotation.y = rotationAngle;
-    }
+  const { rotation } = useSpring({
+    rotation: [0, rotationAngle, 0],
+    config: { tension: 170, friction: 44 },
   });
 
   return (
-    <mesh ref={turtleRef} position={position} scale={1} {...props}>
+    <a.mesh
+      ref={turtleRef}
+      position={position}
+      rotation={rotation}
+      scale={1}
+      {...props}
+    >
       <boxGeometry />
       <arrowHelper
         args={[
@@ -25,7 +30,7 @@ const Turtle = ({ position, rotationAngle = 0, ...props }) => {
       />
       <meshStandardMaterial color={"white"} />
       <Edges linewidth={3} threshold={15} color={"black"} />
-    </mesh>
+    </a.mesh>
   );
 };
 
