@@ -53,23 +53,22 @@ function App() {
     const handleKeyDown = async (event) => {
       switch (event.key.toLowerCase()) {
         case "w":
-/*           // For future but delays need to be adjusted 
-          handleInspect(ws, setBlockCollision, setBlockName, setBlockDirection);
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+          /*           handleInspect(ws, setBlockCollision, setBlockName, setBlockDirection);
+          await new Promise((resolve) => setTimeout(resolve, 225));
           handleInspectDown(
             ws,
             setBlockCollision,
             setBlockName,
             setBlockDirection
           );
-          await new Promise((resolve) => setTimeout(resolve, 3000));
+          await new Promise((resolve) => setTimeout(resolve, 225));
           handleInspectUp(
             ws,
             setBlockCollision,
             setBlockName,
             setBlockDirection
           );
-          await new Promise((resolve) => setTimeout(resolve, 4000)); */
+          await new Promise((resolve) => setTimeout(resolve, 225)); */
           handleForward(ws, setIsFacing, setPosition);
           break;
         case "a":
