@@ -20,6 +20,8 @@ import {
   handleBlockColor,
   getBlockColor,
   handleInspect,
+  handleInspectDown,
+  handleInspectUp,
 } from "./handlers/handlers";
 
 function App() {
@@ -51,6 +53,23 @@ function App() {
     const handleKeyDown = async (event) => {
       switch (event.key.toLowerCase()) {
         case "w":
+/*           // For future but delays need to be adjusted 
+          handleInspect(ws, setBlockCollision, setBlockName, setBlockDirection);
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          handleInspectDown(
+            ws,
+            setBlockCollision,
+            setBlockName,
+            setBlockDirection
+          );
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          handleInspectUp(
+            ws,
+            setBlockCollision,
+            setBlockName,
+            setBlockDirection
+          );
+          await new Promise((resolve) => setTimeout(resolve, 4000)); */
           handleForward(ws, setIsFacing, setPosition);
           break;
         case "a":
@@ -100,11 +119,11 @@ function App() {
 
         handleBlockColor(blockName, setBlockColor, blockColor);
 
-        await new Promise((resolve) => setTimeout(resolve, 3));
+        await new Promise((resolve) => setTimeout(resolve, 10));
 
         getBlockColor(blockName, blockColor, setAssignColor);
 
-        await new Promise((resolve) => setTimeout(resolve, 3));
+        await new Promise((resolve) => setTimeout(resolve, 10));
 
         handleAddBlock(
           blockDirection,
