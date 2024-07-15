@@ -10,14 +10,14 @@ const getRandomColor = () => {
 
 export const handleBlockColor = (blockName, setBlockColor, blockColor) => {
   if (blockColor.some((block) => block.name === blockName)) {
-    console.log("Block already exists. No changes made.");
+    /* console.log("Block already exists. No changes made."); */
     return;
   } else {
-    console.log("New Color Has Been Added!");
+    /* console.log("New Color Has Been Added!"); */
     const newColor = getRandomColor();
     const updatedColors = [...blockColor, { name: blockName, color: newColor }];
     setBlockColor(updatedColors);
-    console.log(updatedColors);
+    /* console.log(updatedColors); */
   }
 };
 

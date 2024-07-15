@@ -24,18 +24,17 @@ import {
   handleInspectUp,
 } from "./handlers/handlers";
 
+const ws = new WebSocket("ws://localhost:43509");
+
+// WebSocket event listeners
+ws.onopen = function () {
+  console.log("Connected to WebSocket server");
+};
+
+ws.onclose = function () {
+  console.log("Disconnected from WebSocket server");
+};
 function App() {
-  const ws = new WebSocket("ws://localhost:43509");
-
-  // WebSocket event listeners
-  ws.onopen = function () {
-    console.log("Connected to WebSocket server");
-  };
-
-  ws.onclose = function () {
-    console.log("Disconnected from WebSocket server");
-  };
-
   const [rotationAngle, setRotationAngle] = useState(0);
   const [position, setPosition] = useState({ x: 0, y: 0, z: 0 });
   const [isFacing, setIsFacing] = useState(0);
@@ -118,11 +117,11 @@ function App() {
 
         handleBlockColor(blockName, setBlockColor, blockColor);
 
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 7));
 
         getBlockColor(blockName, blockColor, setAssignColor);
 
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 7));
 
         handleAddBlock(
           blockDirection,
@@ -135,7 +134,7 @@ function App() {
           assignColor
         );
       } else if (blockName === "None") {
-        /*         console.log("Remove Block: " + blockName); */
+        /* console.log("Removed Block: " + blockName); */
 
         handleRemoveBlock(
           blockDirection,

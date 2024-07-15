@@ -81,7 +81,7 @@ const handleRemoveBlock = (
         block.position[2] !== positionToRemove[2]
     )
   );
-  console.log("Removed block at position:", positionToRemove);
+  /* console.log("Removed block at position:", positionToRemove); */
 };
 
 export { handleAddBlock, handleRemoveBlock };

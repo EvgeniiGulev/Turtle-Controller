@@ -18,7 +18,7 @@ const handleInspect = (
       if (messageCount === 2) {
         const blockData = await blobToJson(event.data);
         if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
-          console.log("Nothing to inspect or invalid block data");
+          /* console.log("Nothing to inspect or invalid block data"); */
           setBlockDirection(0);
           setBlockName("None");
           setBlockCollision(false);
@@ -53,7 +53,7 @@ const handleInspectUp = (
       if (messageCount === 2) {
         const blockData = await blobToJson(event.data);
         if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
-          console.log("Nothing to inspect or invalid block data");
+          /* console.log("Nothing to inspect or invalid block data"); */
           setBlockDirection(2);
           setBlockName("None");
           setBlockCollision(false);
@@ -88,7 +88,7 @@ const handleInspectDown = (
       if (messageCount === 2) {
         const blockData = await blobToJson(event.data);
         if (blockData === "Nothing to inspect" || blockData[0] !== '"') {
-          console.log("Nothing to inspect or invalid block data");
+          /* console.log("Nothing to inspect or invalid block data"); */
           setBlockDirection(1);
           setBlockName("None");
           setBlockCollision(false);
