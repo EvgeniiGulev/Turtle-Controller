@@ -6,7 +6,8 @@ const handleAddBlock = (
   isY,
   isZ,
   blockName,
-  setWorldBlocks
+  setWorldBlocks,
+  assignColor
 ) => {
   let x = 0,
     y = 0,
@@ -35,6 +36,7 @@ const handleAddBlock = (
       id: prevWorldBlocks.length,
       position: [isX + x, isY + y, isZ + z],
       name: blockName,
+      color: assignColor,
     },
   ]);
 };

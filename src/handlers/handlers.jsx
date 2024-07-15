@@ -14,6 +14,7 @@ import {
 } from "./movement";
 import { sendCommand } from "./sendCommand";
 import { handleAddBlock, handleRemoveBlock } from "./blockManager";
+import { handleBlockColor, getBlockColor } from "./blockColor";
 
 export {
   // Tunnel Popup
@@ -40,6 +41,10 @@ export {
   //BlockManagement
   handleAddBlock,
   handleRemoveBlock,
+
+  //BlockColor
+  handleBlockColor,
+  getBlockColor,
 
   //SendCommand
   sendCommand,

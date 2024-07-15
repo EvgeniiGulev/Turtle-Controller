@@ -1,32 +1,56 @@
 import { sendCommand } from "./sendCommand";
 
-const handleForward = (ws, setIsFacing, setIsX, setIsZ) => {
+const handleForward = (ws, setIsFacing, setPosition) => {
   sendCommand(ws, "forward");
   setIsFacing((prevFacing) => {
     if (prevFacing % 4 === 0) {
-      setIsZ((prevZ) => prevZ - 1);
+      setPosition((prevPosition) => ({
+        ...prevPosition,
+        z: prevPosition.z - 1,
+      }));
     } else if (prevFacing % 4 === 2) {
-      setIsZ((prevZ) => prevZ + 1);
+      setPosition((prevPosition) => ({
+        ...prevPosition,
+        z: prevPosition.z + 1,
+      }));
     } else if (prevFacing % 4 === 1) {
-      setIsX((prevX) => prevX + 1);
+      setPosition((prevPosition) => ({
+        ...prevPosition,
+        x: prevPosition.x + 1,
+      }));
     } else if (prevFacing % 4 === 3) {
-      setIsX((prevX) => prevX - 1);
+      setPosition((prevPosition) => ({
+        ...prevPosition,
+        x: prevPosition.x - 1,
+      }));
     }
     return prevFacing;
   });
 };
 
-const handleBack = (ws, setIsFacing, setIsX, setIsZ) => {
+const handleBack = (ws, setIsFacing, setPosition) => {
   sendCommand(ws, "back");
   setIsFacing((prevFacing) => {
     if (prevFacing % 4 === 0) {
-      setIsZ((prevZ) => prevZ + 1);
+      setPosition((prevPosition) => ({
+        ...prevPosition,
+        z: prevPosition.z + 1,
+      }));
     } else if (prevFacing % 4 === 2) {
-      setIsZ((prevZ) => prevZ - 1);
+      setPosition((prevPosition) => ({
+        ...prevPosition,
+        z: prevPosition.z - 1,
+      }));
     } else if (prevFacing % 4 === 1) {
-      setIsX((prevX) => prevX - 1);
+      setPosition((prevPosition) => ({
+        ...prevPosition,
+        x: prevPosition.x - 1,
+      }));
     } else if (prevFacing % 4 === 3) {
-      setIsX((prevX) => prevX + 1);
+      setPosition((prevPosition) => ({
+        ...prevPosition,
+        x: prevPosition.x + 1,
+      }));
     }
     return prevFacing;
   });
@@ -44,14 +68,20 @@ const handleRight = (ws, setIsFacing, setRotationAngle) => {
   setRotationAngle((prevAngle) => prevAngle - Math.PI / 2);
 };
 
-const handleUp = (ws, setIsY) => {
+const handleUp = (ws, setPosition) => {
   sendCommand(ws, "up");
-  setIsY((prevY) => prevY + 1);
+  setPosition((prevPosition) => ({
+    ...prevPosition,
+    y: prevPosition.y + 1,
+  }));
 };
 
-const handleDown = (ws, setIsY) => {
+const handleDown = (ws, setPosition) => {
   sendCommand(ws, "down");
-  setIsY((prevY) => prevY - 1);
+  setPosition((prevPosition) => ({
+    ...prevPosition,
+    y: prevPosition.y - 1,
+  }));
 };
 
 export {

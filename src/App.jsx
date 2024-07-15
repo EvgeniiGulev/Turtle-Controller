@@ -9,21 +9,22 @@ import Turtle from "./model/turtle";
 import Block from "./model/block";
 import "./App.css";
 import {
-  //Movement
   handleForward,
   handleBack,
   handleLeft,
   handleRight,
   handleUp,
   handleDown,
-  //Block Management
   handleAddBlock,
   handleRemoveBlock,
+  handleBlockColor,
+  getBlockColor,
 } from "./handlers/handlers";
 
 function App() {
   const ws = new WebSocket("ws://localhost:43509");
 
+  // WebSocket event listeners
   ws.onopen = function () {
     console.log("Connected to WebSocket server");
   };
@@ -33,9 +34,7 @@ function App() {
   };
 
   const [rotationAngle, setRotationAngle] = useState(0);
-  const [isX, setIsX] = useState(0);
-  const [isY, setIsY] = useState(0);
-  const [isZ, setIsZ] = useState(0);
+  const [position, setPosition] = useState({ x: 0, y: 0, z: 0 });
   const [isFacing, setIsFacing] = useState(0);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState(false);
@@ -44,27 +43,29 @@ function App() {
   const [blockName, setBlockName] = useState("");
   const [blockDirection, setBlockDirection] = useState(0);
   const [worldBlocks, setWorldBlocks] = useState([]);
+  const [blockColor, setBlockColor] = useState([]);
+  const [assignColor, setAssignColor] = useState(null);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       switch (event.key.toLowerCase()) {
         case "w":
-          handleForward(ws, setIsFacing, setIsX, setIsZ);
+          handleForward(ws, setIsFacing, setPosition);
           break;
         case "a":
           handleLeft(ws, setIsFacing, setRotationAngle);
           break;
         case "s":
-          handleBack(ws, setIsFacing, setIsX, setIsZ);
+          handleBack(ws, setIsFacing, setPosition);
           break;
         case "d":
           handleRight(ws, setIsFacing, setRotationAngle);
           break;
         case "arrowup":
-          handleUp(ws, setIsY);
+          handleUp(ws, setPosition);
           break;
         case "arrowdown":
-          handleDown(ws, setIsY);
+          handleDown(ws, setPosition);
           break;
         default:
           break;
@@ -76,15 +77,7 @@ function App() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [
-    handleForward,
-    handleBack,
-    handleLeft,
-    handleRight,
-    handleUp,
-    handleDown,
-    ws,
-  ]);
+  }, [ws]);
 
   const handleTooltip = (event, text) => {
     setTooltipText(text);
@@ -100,43 +93,57 @@ function App() {
   }, [showTooltip]);
 
   useEffect(() => {
-    if (blockCollision) {
-      console.log("Add Block: " + blockName);
-      handleAddBlock(
-        blockDirection,
-        isFacing,
-        isX,
-        isY,
-        isZ,
-        blockName,
-        setWorldBlocks
-      );
-    } else if (blockName === "None") {
-      console.log("Remove Block: " + blockName);
-      handleRemoveBlock(
-        blockDirection,
-        isFacing,
-        isX,
-        isY,
-        isZ,
-        setWorldBlocks
-      );
-    }
+    const addOrRemoveBlock = async () => {
+      if (blockCollision) {
+        console.log("Add Block: " + blockName);
 
-    // Reset state variables after processing
-    setBlockDirection(0);
-    setBlockCollision(false);
-    setBlockName("");
+        handleBlockColor(blockName, setBlockColor, blockColor);
+
+        await new Promise((resolve) => setTimeout(resolve, 1));
+
+        getBlockColor(blockName, blockColor, setAssignColor);
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        handleAddBlock(
+          blockDirection,
+          isFacing,
+          position.x,
+          position.y,
+          position.z,
+          blockName,
+          setWorldBlocks,
+          assignColor
+        );
+      } else if (blockName === "None") {
+        console.log("Remove Block: " + blockName);
+
+        handleRemoveBlock(
+          blockDirection,
+          isFacing,
+          position.x,
+          position.y,
+          position.z,
+          setWorldBlocks
+        );
+      }
+
+      setBlockDirection(0);
+      setBlockCollision(false);
+      setBlockName("");
+    };
+
+    addOrRemoveBlock();
   }, [
     blockCollision,
     blockName,
+    blockColor,
+    assignColor,
+    blockDirection,
     handleAddBlock,
     handleRemoveBlock,
     isFacing,
-    isX,
-    isY,
-    isZ,
-    blockDirection,
+    position,
   ]);
 
   return (
@@ -149,10 +156,12 @@ function App() {
         ws={ws}
       />
       <Inventory />
-      <Canvas camera={{ position: [isX, isY + 1, isZ + 5] }}>
+      <Canvas
+        camera={{ position: [position.x, position.y + 1, position.z + 5] }}
+      >
         <ambientLight />
         <Turtle
-          position={[isX, isY, isZ]}
+          position={[position.x, position.y, position.z]}
           key={"Bob"}
           rotationAngle={rotationAngle}
           setIsFacing={setIsFacing}
@@ -162,15 +171,10 @@ function App() {
             position={block.position}
             text={block.name}
             key={block.id}
+            color={block.color}
             handleTooltip={handleTooltip}
           />
         ))}
-        <Block
-          position={[1, 1, 0]}
-          text={"kurva"}
-          key={"123123"}
-          handleTooltip={handleTooltip}
-        />
         <OrbitControls />
       </Canvas>{" "}
       {showTooltip && <Tooltip text={tooltipText} position={tooltipPosition} />}

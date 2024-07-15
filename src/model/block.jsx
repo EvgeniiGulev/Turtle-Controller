@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Edges } from "@react-three/drei";
 
-const Block = ({ text, position, handleTooltip, ...props }) => {
+const Block = ({ text, position, handleTooltip, color, ...props }) => {
   const blockRef = useRef();
 
   return (
@@ -14,7 +14,7 @@ const Block = ({ text, position, handleTooltip, ...props }) => {
       onClick={(event) => handleTooltip(event, text)}
     >
       <boxGeometry />
-      <meshStandardMaterial color={"blue"} />
+      <meshStandardMaterial color={color} />
       <Edges linewidth={3} threshold={15} color={"black"} />
     </mesh>
   );
