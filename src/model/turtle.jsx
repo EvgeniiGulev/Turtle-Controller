@@ -6,15 +6,16 @@ import { useSpring, a } from "@react-spring/three";
 const Turtle = ({ position, rotationAngle, ...props }) => {
   const turtleRef = useRef();
 
-  const { rotation } = useSpring({
+  const { rotation, pos } = useSpring({
     rotation: [0, rotationAngle, 0],
-    config: { tension: 170, friction: 44 },
+    pos: position,
+    config: { tension: 170, friction: 40 },
   });
 
   return (
     <a.mesh
       ref={turtleRef}
-      position={position}
+      position={pos}
       rotation={rotation}
       scale={1}
       {...props}
