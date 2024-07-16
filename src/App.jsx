@@ -47,6 +47,7 @@ function App() {
   const [worldBlocks, setWorldBlocks] = useState([]);
   const [blockColor, setBlockColor] = useState([]);
   const [assignColor, setAssignColor] = useState(null);
+  const [inventorySlot, setInventorySlot] = useState(1);
 
   const handleTooltip = (event, text) => {
     setTooltipText(text);
@@ -173,7 +174,7 @@ function App() {
         setBlockDirection={setBlockDirection}
         ws={ws}
       />
-      <Inventory />
+      <Inventory ws={ws} setInventorySlot={setInventorySlot} />
       <Canvas
         camera={{ position: [position.x, position.y + 1, position.z + 5] }}
       >
