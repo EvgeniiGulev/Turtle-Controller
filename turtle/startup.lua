@@ -141,10 +141,10 @@ local function handleMessage(message)
         setHome()
     elseif message == "return" then
         returnHome()
-	elseif string.sub(message, 1, 6) == "select" then
+    elseif string.sub(message, 1, 6) == "select" then
         local params = { string.match(message, "select (%d+)") }
-		local slot = tonumber(params[1])
-		turtle.select(slot+1)
+        local slot = tonumber(params[1])
+        turtle.select(slot+1)
     elseif string.sub(message, 1, 8) == "excavate" then
         local params = { string.match(message, "excavate (%d+) (%d+) (%d+)") }
         local length = tonumber(params[1])
