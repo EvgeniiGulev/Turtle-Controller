@@ -19,9 +19,6 @@ import {
   handleRemoveBlock,
   handleBlockColor,
   getBlockColor,
-  handleInspect,
-  handleInspectDown,
-  handleInspectUp,
 } from "./handlers/handlers";
 
 const ws = new WebSocket("ws://localhost:43509");
@@ -59,22 +56,6 @@ function App() {
     const handleKeyDown = async (event) => {
       switch (event.key.toLowerCase()) {
         case "w":
-          /*           handleInspect(ws, setBlockCollision, setBlockName, setBlockDirection);
-          await new Promise((resolve) => setTimeout(resolve, 225));
-          handleInspectDown(
-            ws,
-            setBlockCollision,
-            setBlockName,
-            setBlockDirection
-          );
-          await new Promise((resolve) => setTimeout(resolve, 225));
-          handleInspectUp(
-            ws,
-            setBlockCollision,
-            setBlockName,
-            setBlockDirection
-          );
-          await new Promise((resolve) => setTimeout(resolve, 225)); */
           handleForward(ws, setIsFacing, setPosition);
           break;
         case "a":

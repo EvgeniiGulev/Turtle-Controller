@@ -12,8 +12,10 @@ import {
   handleInspect,
   handleInspectUp,
   handleInspectDown,
-  updateInventory,
   //updateInventory
+  updateInventory,
+  //getFuelLevel
+  getFuelLevel,
 } from "../handlers/handlers";
 
 const Controls = ({
@@ -24,6 +26,7 @@ const Controls = ({
 }) => {
   const [wasSent, setWasSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [fuelLevel, setFuelLevel] = useState(0);
 
   ws.onopen = function () {
     console.log("Connected to WebSocket server");
@@ -124,7 +127,7 @@ const Controls = ({
             className="controls-btn-main"
             onClick={() => sendCommand(ws, "suck")}
           >
-            Suck
+            Take
           </button>
           <button
             className="controls-btn-direction"
@@ -177,41 +180,21 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand(ws, "compareUp")}
+            onClick={() => sendCommand(ws, "dropUp")}
           >
             Up
           </button>
           <button
             className="controls-btn-main"
-            onClick={() => sendCommand(ws, "compare")}
+            onClick={() => sendCommand(ws, "drop")}
           >
-            Compare
+            Deposit
           </button>
           <button
             className="controls-btn-direction"
-            onClick={() => sendCommand(ws, "compareDown")}
+            onClick={() => sendCommand(ws, "dropDown")}
           >
             Down
-          </button>
-        </li>
-        <li className="controls-item">
-          <button
-            className="controls-btn-direction"
-            onClick={() => sendCommand(ws, "craft64")}
-          >
-            x64
-          </button>
-          <button
-            className="controls-btn-main"
-            onClick={() => sendCommand(ws, "craft")}
-          >
-            Craft
-          </button>
-          <button
-            className="controls-btn-direction"
-            onClick={() => sendCommand(ws, "craft1")}
-          >
-            x1
           </button>
         </li>
         <li className="controls-item">
@@ -223,9 +206,9 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-option"
-            onClick={() => sendCommand(ws, "getFuel")}
+            onClick={() => getFuelLevel(ws, setFuelLevel)}
           >
-            GetFuel
+            {fuelLevel ? fuelLevel : "GetFuel"}
           </button>
         </li>
         <li className="controls-item">
@@ -239,9 +222,9 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-option"
-            onClick={() => sendCommand(ws, "edit")}
+            onClick={() => sendCommand(ws, "craft")}
           >
-            Edit
+            Craft
           </button>
         </li>
         <li className="controls-item">
