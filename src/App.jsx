@@ -48,6 +48,12 @@ function App() {
   const [blockColor, setBlockColor] = useState([]);
   const [assignColor, setAssignColor] = useState(null);
 
+  const handleTooltip = (event, text) => {
+    setTooltipText(text);
+    setTooltipPosition({ x: event.clientX, y: event.clientY });
+    setShowTooltip(true);
+  };
+
   useEffect(() => {
     const handleKeyDown = async (event) => {
       switch (event.key.toLowerCase()) {
@@ -97,12 +103,6 @@ function App() {
     };
   }, [ws]);
 
-  const handleTooltip = (event, text) => {
-    setTooltipText(text);
-    setTooltipPosition({ x: event.clientX, y: event.clientY });
-    setShowTooltip(true);
-  };
-
   useEffect(() => {
     if (showTooltip) {
       const timer = setTimeout(() => setShowTooltip(false), 2000);
@@ -113,7 +113,7 @@ function App() {
   useEffect(() => {
     const addOrRemoveBlock = async () => {
       if (blockCollision) {
-        /*         console.log("Add Block: " + blockName); */
+        /* console.log("Add Block: " + blockName); */
 
         handleBlockColor(blockName, setBlockColor, blockColor);
 

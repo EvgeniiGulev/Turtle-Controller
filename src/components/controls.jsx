@@ -12,6 +12,8 @@ import {
   handleInspect,
   handleInspectUp,
   handleInspectDown,
+  updateInventory,
+  //updateInventory
 } from "../handlers/handlers";
 
 const Controls = ({
@@ -251,7 +253,7 @@ const Controls = ({
         <li className="controls-item">
           <button
             className="controls-btn-utils"
-            onClick={() => sendCommand(ws, "update")}
+            onClick={() => updateInventory(ws)}
           >
             Update
           </button>

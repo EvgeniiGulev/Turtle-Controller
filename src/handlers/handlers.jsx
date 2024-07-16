@@ -15,6 +15,7 @@ import {
 import { sendCommand } from "./sendCommand";
 import { handleAddBlock, handleRemoveBlock } from "./blockManager";
 import { handleBlockColor, getBlockColor } from "./blockColor";
+import { updateInventory } from "./updateInventory";
 
 export {
   // Tunnel Popup
@@ -48,4 +49,7 @@ export {
 
   //SendCommand
   sendCommand,
+
+  //Inventory
+  updateInventory,
 };
