@@ -1,4 +1,5 @@
-local ws, err = http.websocket("ws://31.153.2.243:43509")
+---@diagnostic disable: undefined-global
+local ws, err = http.websocket("ws://213.7.84.119:43509")
  
 if not ws then
     print("Failed to connect to WebSocket server:", err)
@@ -6,8 +7,9 @@ if not ws then
 end
  
 print("Connected to WebSocket server")
- 
+
 local homeCoords = nil
+local turtle_id = 0;
  
 -- Function to set home coordinates
 local function setHome()
@@ -52,6 +54,7 @@ local function returnHome()
     end
     print("Returned to home.")
 end
+---
  
 -- Function to update inventory and send it to WebSocket server
 local function updateInventory()
@@ -64,6 +67,58 @@ local function updateInventory()
     end
     ws.send(textutils.serializeJSON(inventory))
 end
+
+-- Function to edit floppy disk data
+function populateDisk()
+    if not fs.isDir('/disk') then
+        error('Disk not inserted')
+    end
+    local file_contents = fs.open('startup', 'r').readAll()
+    s = 'FILE_CONTENTS = [===[' .. file_contents .. ']' .. '===]'
+    s = s .. [[
+    file = fs.open('/startup', 'w')
+    file.write(FILE_CONTENTS)
+    file.close()
+    shell.run('startup')
+    ]]
+    file = fs.open('/disk/startup', 'w')
+    file.write(s)
+    file.close()
+end
+
+function getMinionName()
+    local minionNames = {
+        "Kevin", "Stuart", "Bob", "Dave", "Jerry", "Carl", "Phil", "Tom",
+        "Tim", "Mark", "Jorge", "Donny", "John", "Paul", "Lance", "Mike",
+        "Ken", "Chris", "Steve", "Eric", "Larry", "Barry", "Jim", "Mitch",
+        "Sam", "Otto", "Norbert", "Frank", "Gordon", "Oscar", "Pete",
+        "Fred", "Eddie", "Hank", "Jack", "Leon", "Max", "Nick", "Ron",
+        "Scott", "Victor", "Walter", "Xander", "Yves", "Zack", "Andy",
+        "Benny", "Charlie", "Derek", "Elmer", "Floyd", "George", "Harry",
+        "Iggy", "Jake", "Kyle", "Luke", "Manny", "Nate", "Ollie", "Quinn",
+        "Randy", "Sammy", "Toby", "Ulysses", "Vinny", "Wes", "Xavier",
+        "Yuri", "Zane"
+    }
+    local randomIndex = math.random(1, #minionNames)
+    return minionNames[randomIndex]
+end
+
+-- Function to set Turtle Name
+function setTurtleName()
+    local name = getMinionName();
+    if not os.getComputerLabel() then
+        os.setComputerLabel(name)
+        return name
+    end
+    return os.getComputerLabel()
+end
+
+-- Function to get turtle #id
+function getTurtleID()
+    local id = os.getComputerID()
+    return id;
+end
+
  
 -- Function to handle incoming messages
 local function handleMessage(message)
@@ -137,8 +192,8 @@ local function handleMessage(message)
     elseif message == "stop" then
         -- Stop execution
         return
-    elseif message == "setHome" then
-        setHome()
+    elseif message == "Edit" then
+        populateDisk()
     elseif message == "return" then
         returnHome()
     elseif string.sub(message, 1, 6) == "select" then
@@ -151,9 +206,11 @@ local function handleMessage(message)
         local width = tonumber(params[2])
         local depth = tonumber(params[3])
         if length and width and depth then
+            turtle.digDown()
+            turtle.down()
             for d = 1, depth do
                 for w = 1, width do
-                    for l = 1, length do
+                    for l = 1, length - 1 do
                         turtle.dig()
                         turtle.forward()
                     end
@@ -182,19 +239,46 @@ local function handleMessage(message)
         else
             print("Invalid parameters for excavation")
         end
+        elseif string.sub(message, 1, 6) == "tunnel" then
+        local params = { string.match(message, "tunnel (%d+) (%d+) (%d+)") }
+        local height = tonumber(params[1])
+        local width = tonumber(params[2])
+        local depth = tonumber(params[3])
+        if height and width and depth then
+            turtle.dig()
+            turtle.forward()
+            print("Tunneling completed")
+        else
+            print("Invalid parameters for excavation")
+        end
     end
 end
- 
--- Send a message to the WebSocket server
-ws.send("Hello from ComputerCraft!")
+
+local function createTurtle(name, turtle_id)
+    ws.send(name.." "..turtle_id)
+end
+
+local function turtleStartup()
+    local name = setTurtleName()
+    turtle_id = getTurtleID()
+    createTurtle(name, turtle_id)
+
+    local fuelLevel = turtle.getFuelLevel()
+    if fuelLevel == 0 then
+        print("Please Provide Fuel!")
+    end
+    -- Send a message to the WebSocket server
+    ws.send("Hello from turtle name: "..name.." id: #"..turtle_id)
+    while true do
+        local message = ws.receive()
+        if message then
+            handleMessage(message)
+        end
+    end
+end
  
 -- Main loop to listen for messages
-while true do
-    local message = ws.receive()
-    if message then
-        handleMessage(message)
-    end
-end
- 
+turtleStartup()
+
 -- Close the WebSocket connection when done
 ws.close()
