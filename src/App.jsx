@@ -172,9 +172,7 @@ function App() {
         <ambientLight />
         <Turtle
           position={[position.x, position.y, position.z]}
-          key={"Bob"}
           rotationAngle={rotationAngle}
-          setIsFacing={setIsFacing}
         />
         {worldBlocks.map((block) => (
           <Block
