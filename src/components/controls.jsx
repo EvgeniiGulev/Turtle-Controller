@@ -48,7 +48,7 @@ const Controls = ({
   useEffect(() => {
     const invervalInventory = setInterval(() => {
       updateInventory(ws);
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(invervalInventory);
   }, [ws]);
