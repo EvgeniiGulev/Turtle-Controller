@@ -184,7 +184,11 @@ local function handleMessage(message)
             ws.send("Nothing to inspect")
         end
     elseif message == "craft" then
-        turtle.craft()
+        if turtle then
+            turtle.craft()
+        else
+            print("Turtle is nil, cannot craft.")
+        end
     elseif message == "getFuel" then
         local fuelLevel = turtle.getFuelLevel()
         ws.send(fuelLevel)

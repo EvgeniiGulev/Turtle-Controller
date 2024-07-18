@@ -242,7 +242,7 @@ const Controls = ({
             className="controls-btn-option"
             onClick={() => getFuelLevel(ws, setFuelLevel)}
           >
-            {fuelLevel ? fuelLevel : "GetFuel"}
+            {fuelLevel || "GetFuel"}
           </button>
         </li>
         <li className="controls-item">
@@ -348,6 +348,9 @@ const Controls = ({
             value={selectedTurtleId}
             onChange={handleSelectChange}
           >
+            <option key={0} className="turtle-option" value={0}>
+              Select Turtle
+            </option>
             {turtles.map((turtle) => (
               <option
                 key={turtle.id}

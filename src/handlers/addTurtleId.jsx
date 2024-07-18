@@ -19,7 +19,11 @@ export const addTurtleId = (ws, setTurtles) => {
 
         const splitMessage = messageData.split(" ");
 
-        if (splitMessage.length !== 2 || splitMessage[0] === "setActiveID") {
+        if (
+          splitMessage.length !== 2 ||
+          splitMessage[0] === "setActiveID" ||
+          splitMessage[0] === "select"
+        ) {
           return;
         }
 
