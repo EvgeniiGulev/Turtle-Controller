@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 
-const Inventory = ({ ws, setInventorySlot }) => {
+const Inventory = ({ ws }) => {
   const [selectedSlot, setSelectedSlot] = useState(0);
 
   const handleSelectSlot = (index) => {
     setSelectedSlot(index);
-    setInventorySlot(index);
     ws.send("select " + index);
   };
 

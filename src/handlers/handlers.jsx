@@ -17,6 +17,7 @@ import { handleAddBlock, handleRemoveBlock } from "./blockManager";
 import { handleBlockColor, getBlockColor } from "./blockColor";
 import { updateInventory } from "./updateInventory";
 import { getFuelLevel } from "./getFuelLevel";
+import { addTurtleId } from "./addTurtleId";
 
 export {
   // Tunnel Popup
@@ -56,4 +57,7 @@ export {
 
   //FuelLevel
   getFuelLevel,
+
+  //AddTurtleId
+  addTurtleId,
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   //SendCommand
   sendCommand,
@@ -23,10 +23,12 @@ const Controls = ({
   setBlockCollision,
   setBlockName,
   setBlockDirection,
+  turtles,
 }) => {
   const [wasSent, setWasSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [fuelLevel, setFuelLevel] = useState(0);
+  const [selectedTurtleId, setSelectedTurtleId] = useState("");
 
   ws.onopen = function () {
     console.log("Connected to WebSocket server");
@@ -41,6 +43,22 @@ const Controls = ({
     setTimeout(() => {
       setWasSent(false);
     }, 5000);
+  };
+
+  useEffect(() => {
+    const invervalInventory = setInterval(() => {
+      updateInventory(ws);
+    }, 1000);
+
+    return () => clearInterval(invervalInventory);
+  }, [ws]);
+
+  const handleSelectChange = (event) => {
+    const activeTurtleId = event.target.value;
+    setSelectedTurtleId(activeTurtleId);
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send("setActiveID " + activeTurtleId);
+    }
   };
 
   const handleExcavateSubmit = () => {
@@ -249,6 +267,20 @@ const Controls = ({
         </li>
         <li className="controls-item">
           <button
+            className="controls-btn-utils"
+            onClick={() => sendCommand(ws, "editDisk")}
+          >
+            EditDisk
+          </button>
+          <button
+            className="controls-btn-utils"
+            onClick={() => sendCommand(ws, "shutdown")}
+          >
+            TurnOff
+          </button>
+        </li>
+        <li className="controls-item">
+          <button
             className="controls-btn-utils open-excavate-popup"
             onClick={() => handleOpenExcavatePopup()}
           >
@@ -285,10 +317,22 @@ const Controls = ({
           <p className="turtle-name">Turtle:</p>
         </li>
         <li className="controls-item">
-          <select name="turtles" id="turtles" className="turtle-select">
-            <option className="turtle-option" value="turtleid">
-              #1 - Bob
-            </option>
+          <select
+            name="turtles"
+            id="turtles"
+            className="turtle-select"
+            value={selectedTurtleId}
+            onChange={handleSelectChange}
+          >
+            {turtles.map((turtle) => (
+              <option
+                key={turtle.id}
+                className="turtle-option"
+                value={turtle.id}
+              >
+                #{turtle.id} - {turtle.name}
+              </option>
+            ))}
           </select>
         </li>
       </ul>

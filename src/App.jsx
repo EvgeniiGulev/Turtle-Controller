@@ -19,6 +19,7 @@ import {
   handleRemoveBlock,
   handleBlockColor,
   getBlockColor,
+  addTurtleId,
 } from "./handlers/handlers";
 
 const ws = new WebSocket("ws://localhost:43509");
@@ -44,13 +45,21 @@ function App() {
   const [worldBlocks, setWorldBlocks] = useState([]);
   const [blockColor, setBlockColor] = useState([]);
   const [assignColor, setAssignColor] = useState(null);
-  const [inventorySlot, setInventorySlot] = useState(1);
+  const [turtles, setTurtles] = useState([]);
 
   const handleTooltip = (event, text) => {
     setTooltipText(text);
     setTooltipPosition({ x: event.clientX, y: event.clientY });
     setShowTooltip(true);
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      addTurtleId(ws, setTurtles);
+    }, 100);
+
+    return () => clearInterval(intervalId);
+  }, [addTurtleId, setTurtles, ws]);
 
   useEffect(() => {
     const handleKeyDown = async (event) => {
@@ -154,8 +163,9 @@ function App() {
         setBlockName={setBlockName}
         setBlockDirection={setBlockDirection}
         ws={ws}
+        turtles={turtles}
       />
-      <Inventory ws={ws} setInventorySlot={setInventorySlot} />
+      <Inventory ws={ws} />
       <Canvas
         camera={{ position: [position.x, position.y + 1, position.z + 5] }}
       >

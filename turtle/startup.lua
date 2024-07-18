@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-global
+---@diagnostic disable: undefined-global, undefined-field
 local ws, err = http.websocket("ws://213.7.84.119:43509")
  
 if not ws then
@@ -10,6 +10,7 @@ print("Connected to WebSocket server")
 
 local homeCoords = nil
 local turtle_id = 0;
+local active_id = 0;
  
 -- Function to set home coordinates
 local function setHome()
@@ -192,9 +193,15 @@ local function handleMessage(message)
     elseif message == "stop" then
         -- Stop execution
         return
-    elseif message == "Edit" then
+    elseif message == "editDisk" then
         populateDisk()
+    elseif message == "setHome" then
+        setHome()
     elseif message == "return" then
+        returnHome()
+    elseif message == "shutdown" then
+        os.shutdown()
+    elseif message == "switchSlot" then
         returnHome()
     elseif string.sub(message, 1, 6) == "select" then
         local params = { string.match(message, "select (%d+)") }
@@ -254,25 +261,43 @@ local function handleMessage(message)
     end
 end
 
-local function createTurtle(name, turtle_id)
+local function turtleInit(name, turtle_id)
     ws.send(name.." "..turtle_id)
+end
+
+-- Function to check and update the active ID
+local function checkID(message)
+    if string.sub(message, 1, 11) == "setActiveID" then
+        local id = string.match(message, "setActiveID (%d+)")
+        id = tonumber(id)
+
+        if id then
+            print("The Turtle ID is: " .. id)
+            active_id = id
+        else
+            print("No valid ID found in message")
+        end
+    end
 end
 
 local function turtleStartup()
     local name = setTurtleName()
     turtle_id = getTurtleID()
-    createTurtle(name, turtle_id)
+    turtleInit(name, turtle_id)
 
     local fuelLevel = turtle.getFuelLevel()
     if fuelLevel == 0 then
         print("Please Provide Fuel!")
     end
-    -- Send a message to the WebSocket server
-    ws.send("Hello from turtle name: "..name.." id: #"..turtle_id)
+--[[     -- Send a message to the WebSocket server
+    ws.send("Hello from "..name.." #"..turtle_id) ]]
     while true do
         local message = ws.receive()
-        if message then
-            handleMessage(message)
+        checkID(message)
+        if turtle_id == active_id then
+            if message then
+                handleMessage(message)
+            end
         end
     end
 end
