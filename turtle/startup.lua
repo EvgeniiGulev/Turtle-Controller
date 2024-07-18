@@ -201,8 +201,11 @@ local function handleMessage(message)
         returnHome()
     elseif message == "shutdown" then
         os.shutdown()
-    elseif message == "switchSlot" then
-        returnHome()
+        elseif string.sub(message, 1, 10) == "transferTo" then
+        local params = { string.match(message, "transferTo (%d+) (%d+)") }
+        local targetIndex = tonumber(params[1])
+        local count = tonumber(params[2])
+        turtle.transferTo(targetIndex, count)
     elseif string.sub(message, 1, 6) == "select" then
         local params = { string.match(message, "select (%d+)") }
         local slot = tonumber(params[1])

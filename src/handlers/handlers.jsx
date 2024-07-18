@@ -18,6 +18,10 @@ import { handleBlockColor, getBlockColor } from "./blockColor";
 import { updateInventory } from "./updateInventory";
 import { getFuelLevel } from "./getFuelLevel";
 import { addTurtleId } from "./addTurtleId";
+import {
+  handleCloseTransferPopup,
+  handleOpenTransferPopup,
+} from "./transferPopup";
 
 export {
   // Tunnel Popup
@@ -27,6 +31,10 @@ export {
   // Excavate Popup
   handleCloseExcavatePopup,
   handleOpenExcavatePopup,
+
+  //TransferPopup
+  handleCloseTransferPopup,
+  handleOpenTransferPopup,
 
   // Inspect
   handleInspect,

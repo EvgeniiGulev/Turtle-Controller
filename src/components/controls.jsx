@@ -8,6 +8,9 @@ import {
   //Excavate
   handleCloseExcavatePopup,
   handleOpenExcavatePopup,
+  //Transfer
+  handleOpenTransferPopup,
+  handleCloseTransferPopup,
   //Inspect
   handleInspect,
   handleInspectUp,
@@ -58,6 +61,19 @@ const Controls = ({
     setSelectedTurtleId(activeTurtleId);
     if (ws.readyState === WebSocket.OPEN) {
       ws.send("setActiveID " + activeTurtleId);
+    }
+  };
+
+  const handleTransferSubmit = () => {
+    const targetSlot = document.querySelector(".transfer-index").value;
+    const count = document.querySelector(".transfer-count").value;
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send("transferTo " + targetSlot + " " + count);
+      handleWasSent();
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Problem sending command! Please check your connection.");
+      setTimeout(() => setErrorMessage(""), 5000);
     }
   };
 
@@ -246,6 +262,14 @@ const Controls = ({
           </button>
         </li>
         <li className="controls-item">
+          <button
+            className="controls-btn-option"
+            onClick={() => handleOpenTransferPopup()}
+          >
+            Shift
+          </button>
+        </li>
+        <li className="controls-item">
           <img
             src="https://cdn-icons-png.flaticon.com/128/649/649686.png"
             alt="item-spacer"
@@ -431,6 +455,44 @@ const Controls = ({
           {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
         <button className="close-popup" onClick={handleCloseTunnelPopup}>
+          Cancel
+        </button>
+      </dialog>
+      <dialog className="popup-container transfer-popup">
+        <p className="popup-heading">Transfer Master</p>
+        <div className="popup-input-container">
+          <label htmlFor="width" className="popup-label">
+            TargetSlot
+          </label>
+          <input
+            type="number"
+            name="target-slot"
+            id="target-slot"
+            className="input-box transfer-index"
+            required
+          />
+          <label htmlFor="height" className="popup-label">
+            Amount
+          </label>
+          <input
+            type="number"
+            name="height"
+            id="count"
+            className="input-box transfer-count"
+            required
+          />
+          <button
+            type="submit"
+            value="submit"
+            className="submit-btn"
+            onClick={handleTransferSubmit}
+            disabled={wasSent}
+          >
+            {wasSent ? "Sent" : "Submit"}
+          </button>
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+        </div>
+        <button className="close-popup" onClick={handleCloseTransferPopup}>
           Cancel
         </button>
       </dialog>
